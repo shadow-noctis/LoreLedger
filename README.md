@@ -13,7 +13,7 @@ A simple command-line app to keep track of all the characters in your stories.
 
 - Edit and delete characters
 - Tag or group characters
-- Flexible character sheets
+- Flexible character sheets and search
 - create web-based version
 
 ## Technologies
