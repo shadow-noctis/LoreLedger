@@ -1,5 +1,6 @@
 import json
 import load
+import name_check
 
 def new_character():
     #read characters.json
@@ -15,8 +16,21 @@ def new_character():
 
     #Check if part of name already exists:
     for name in each_name:
-        if if_name_exists(characters, name, full_name):
-            return
+        matches = name_check.if_name_exists(characters, name)
+    if matches != []:
+        print("Similar names found:\n")
+        for match in matches:
+            print(match)
+            print()
+        while True:
+            confirm = input(f"Continue creating new character with name {full_name}? (y/n)").lower()
+            if confirm == "n" or confirm == "no":
+                print("Character creation canceled\nExiting...")
+                return
+            elif confirm == "y" or confirm == "yes":
+                break
+            else:
+                print("Please enter 'yes' or 'no.")
 
     #To be added:
     """
@@ -51,25 +65,7 @@ def new_character():
     with open("characters.json", "w") as out_file:
         json.dump(characters, out_file, indent=4)
         print("Character succesfully added to your LoreLedger!")
-        #Further development: Option to add new character, return to main menu or exit.
 
-
-def if_name_exists(characters, name, full_name):
-    matches = []
-    
-    for key in characters:
-        if name in key.lower():
-            matches.append(key)
-    if matches != []:
-        print(f"Similar names found:{matches}")
-        while True:
-            confirm = input(f"Continue creating new character with name {full_name}? (y/n) ").lower()
-            if confirm == "n" or confirm == "no":
-                print("Character creation canceled\nExiting...")
-                return True
-            elif confirm == "y" or confirm == "yes":
-                return False
-            else:
-                print("Please enter 'y(es)' or 'n(o)'")
+    #Further development: Option to add new character, return to main menu or exit.
 
 new_character()
