@@ -1,29 +1,26 @@
-import json
 import load
-import name_check
+import matching
 
 def new_character():
     #read characters.json
     characters = load.load_characters()
     
-    full_name = input("Name: ")
-    each_name = full_name.split()
+    name = input("Name: ")
 
     #Check if character already exists and return if True:
-    if full_name in characters:
+    if name in characters:
         print("Character already exists.\nExiting...")
         return
 
     #Check if part of name already exists:
-    for name in each_name:
-        matches = name_check.if_name_exists(characters, name)
+    matches = matching.partial_matches(characters, name)
     if matches != []:
         print("Similar names found:\n")
         for match in matches:
             print(match)
-            print()
+        print()
         while True:
-            confirm = input(f"Continue creating new character with name {full_name}? (y/n)").lower()
+            confirm = input(f"Continue creating new character with name {name}? (y/n)").lower().strip()
             if confirm == "n" or confirm == "no":
                 print("Character creation canceled\nExiting...")
                 return
@@ -54,7 +51,7 @@ def new_character():
     
     
     # Add character info into dictionary (characters)
-    characters[full_name] = {
+    characters[name] = {
         "Age": age,
         "Gender": gender,
         "Family": family_members,
@@ -62,9 +59,9 @@ def new_character():
     }
     
     #Save to JSON file (characters.json):
-    with open("characters.json", "w") as out_file:
-        json.dump(characters, out_file, indent=4)
-        print("Character succesfully added to your LoreLedger!")
+    load.save_characters(characters)
+    print("Character succesfully added to your LoreLedger!")
+
 
     #Further development: Option to add new character, return to main menu or exit.
 

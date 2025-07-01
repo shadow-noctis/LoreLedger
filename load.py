@@ -7,3 +7,8 @@ def load_characters():
             characters = json.load(file)
             return characters
     return {}
+
+
+def save_characters(characters):
+    with open("characters.json", "w") as out_file:
+        json.dump(characters, out_file, indent=4)
