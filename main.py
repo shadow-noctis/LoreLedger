@@ -7,7 +7,7 @@ def main():
 
     while True:
         print()
-        print("=== LoreLedger Main Menu===\n")
+        print("=== LoreLedger Main Menu ===\n")
 
         command = input("What would you like to do: ").lower().strip()
         match command:
@@ -18,9 +18,9 @@ def main():
                 print("   list    - List all characters")
                 print("   read    - View a specific character info")
                 print("   add     - Add a new character")
-                #Delete and edit not yet functional!
                 print("   edit    - Edit a character (Coming soon!)")
-                print("   delete  - Delete a character or all specific story related entries: delete (coming soon!)")
+                print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
+                print("   restore - Restores previous state (Note! Backup is not yet available. Deleting is currently permanent action)")
                 print("   back    - Return back to the main menu")
                 print("   exit    - Exit the program")
                 print()
@@ -33,7 +33,7 @@ def main():
             case "edit":
                 print("Due to coders lazin... krhm, unyielding workload this function is unfrotunately not yet available.")
             case "delete":
-                print("Happy deleating will lead to void. Function currently under construction.")
+                write_character.delete()
             case "exit":
                 print("Exiting LoreLedger...\nBye bye!")
                 return
