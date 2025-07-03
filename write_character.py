@@ -28,15 +28,9 @@ def new_character():
             for match in matches:
                 print(match)
             print()
-            while True:
-                confirm = input(f"Continue creating new character with name {name}? (y/n)").lower().strip()
-                if confirm == "n" or confirm == "no":
-                    print("Character creation canceled\nExiting...")
-                    return
-                elif confirm == "y" or confirm == "yes":
-                    break
-                else:
-                    print("Please enter 'yes' or 'no.")
+            if ui.if_restart(f"Continue creating new character with name {name}? (Y/n) ", yes_priority=True) == False:
+                print(f"Character creation canceled with name {name}...")
+                continue
 
         #To be added:
         """
@@ -63,10 +57,11 @@ def new_character():
         add_appearance = True
         while add_appearance:
             appearance_detail = input("Appearance detail: ").strip()
-            if appearance == "":
+            print(appearance_detail)
+            if appearance_detail == "":
                 break
             appearance.append(appearance_detail)
-            add = input("Add another detail? (Y/n)").lower().strip()
+            add = input("Add another detail? (y/N)").lower().strip()
             if add != "y" and add != "yes" and add != "":
                 add_appearance = False
 
@@ -85,6 +80,14 @@ def new_character():
             "Titles": story
         }
         
+        print(f" === {name} === ")
+        for key in characters[name]:
+            print(f"  - {key}: {characters[name][key]}")
+
+        if ui.if_restart("Add character to LoreLedger? [Y/n]", yes_priority=True) == False:
+            print("Character creation cancelled...")
+            continue
+
         #Save to JSON file (characters.json):
         load.save_characters(characters)
         print("Character succesfully added to your LoreLedger!\n")
@@ -242,34 +245,41 @@ def edit_character():
             return
         elif field == "RESTART":
             continue
-
-        print(f"Current {field}: {characters[to_edit][field]}")
+        if field != "Name":
         #If field is a list, append new information into it.
-        if type(characters[to_edit][field]) is list:
-            
-            new_info = input(f"Add to {field}: ")
-            old_info = characters[to_edit][field].copy()
-            new_list = old_info.copy()
-            new_list.append(new_info)
-            new_info = new_list
+            if type(characters[to_edit][field]) is list:
+                    
+                new_info = input(f"Add to {field}: ")
+                old_info = characters[to_edit][field].copy()
+                new_list = old_info.copy()
+                new_list.append(new_info)
+                new_info = new_list
+            else:
+                new_info = input(f"Change {field} to: ")
+                old_info = characters[to_edit][field]
         else:
             new_info = input(f"Change {field} to: ")
-            old_info = characters[to_edit][field]
+            old_info = to_edit
 
         #Let's user view the changes to be made:
-        print("\n == YOU ARE ABOUT TO EDIT YOUR CHARACTER DETAILS ==")
-        print(f"Edit character: {to_edit}")
-        print("Old details:")
-        print(f"Name: {to_edit}, {field}: {old_info}\n")
-        print(f"New details:")
-        print(f"Name: {to_edit}, {field}: {new_info}")
+        print("\n   === EDIT DETAILS ===")
+        print(f"\n  == {to_edit} ==")
+        print(f"Old details    {field}: {old_info}")
+        print(f"New details    {field}: {new_info}")
+
+        #Confirm changes:
         if ui.if_restart("Save changes? (Y/n) ", yes_priority=True) == False:
             print("Character edit canceled")
-        
+            
         #Save to JSON file:
-        characters[to_edit][field] = new_info
+        if field != "Name":
+            characters[to_edit][field] = new_info
+        else:
+            characters[new_info] = characters.pop(to_edit)
+
         load.save_characters(characters)
-        print(f"== Character {to_edit} succesfully updated ==")
+        print("== Character succesfully updated ==\n")
+
         if ui.if_restart("Would you like to edit another character? (Y/n) ", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return
@@ -303,6 +313,7 @@ def get_field(characters, name):
                 print("Type only number or name of field (without number)")
                 print("To edit another character type in 'new'")
         else:
-            return field    
+            return field
         
-edit_character()
+def edit_name():
+    print("Unavailable")
