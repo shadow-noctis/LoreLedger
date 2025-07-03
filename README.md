@@ -4,14 +4,14 @@ A simple command-line app to keep track of all the characters in your stories.
 
 ## Features
 
-- Add new character sheet (name, age, gender, family, appearance notes)
+- Add new character sheet (name, age, gender, family, appearance notes, story)
 - List all characters
-- Search for character by name
+- Edit and delete characters
 - View the character data using JSON
 
 ## Planned features
 
-- Edit and delete characters
+- Search for character by name
 - Tag or group characters
 - Flexible character sheets and search
 - create web-based version

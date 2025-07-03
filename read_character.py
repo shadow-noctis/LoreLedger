@@ -1,38 +1,13 @@
 import load
 import matching
 import ui
-import write_character
 
 def list_all():
     characters = load.load_characters()
     print()
     for key in characters:
         print(key)
-    print()
-    print("  === Further options: === ")
-    print("read    -  View character info")
-    print("delete  -  Delete character")
-    print("back    -  Return to Main Menu")
-    print("exit    -  Exit LoreLedger")
-    while True:
-        next = input("What would you like to do next: ").lower()
-        match next:
-            case "read":
-                read()
-            case "delete":
-                write_character.delete_character()
-            case "options":
-                print("  === Options: === ")
-                print("read    -  View character info")
-                print("delete  -  Delete character")
-                print("back    -  Return to Main Menu")
-                print("exit    -  Exit LoreLedger")
-            case "back":
-                return
-            case "exit":
-                ui.confirm_exit()
-            case _:
-                print("Unknown command. Type 'options' to review the list of possible commands")
+    return
 
 def read():
     #Load characters:
@@ -42,9 +17,11 @@ def read():
         name = input("Which character would you like to view? ")
         if name == 'list':
             list_all()
+            continue
+        elif name == "back":
             return
-        elif name == "back" or name == "exit":
-            return
+        elif name == "exit":
+            ui.confirm_exit()
         print()
 
         #Error handling:
@@ -53,17 +30,15 @@ def read():
             if len(matches) == 0:
                 print("Error: Character not found.")
                 print("List all characters by typing 'list'")
-                name = None
                 continue
             elif len(matches) == 1:
                 name = matches[0]
             else:
-                print("Exact match not found. Did you mean: ")
+                print("Exact match not found.\nDid you mean: ")
                 print()
                 for match in matches:
                     print(f"- {match}")
                 print()
-                name = None
                 continue
 
         #Print all values
@@ -71,5 +46,6 @@ def read():
         for key in characters[name]:
             print(f"{key}: {characters[name][key]}")
         print()
-        name = None
-        print("Exit reader by typing: 'back'")
+        if ui.if_restart("Would you like to view another character (Y/n) ", yes_priority=True) == False:
+            print("Returning to Main Menu...")
+            return

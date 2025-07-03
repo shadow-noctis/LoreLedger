@@ -18,7 +18,7 @@ def main():
                 print("   list    - List all characters")
                 print("   read    - View a specific character info")
                 print("   add     - Add a new character")
-                print("   edit    - Edit a character (Coming soon!)")
+                print("   edit    - Edit a character")
                 print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
                 print("   restore - Restores previous state (Note! Backup is not yet available. Deleting is currently permanent action)")
                 print("   back    - Return back to the main menu")
@@ -31,7 +31,7 @@ def main():
             case "add":
                 write_character.new_character()
             case "edit":
-                print("Due to coders lazin... krhm, unyielding workload this function is unfrotunately not yet available.")
+                write_character.edit_character()
             case "delete":
                 write_character.delete()
             case "exit":
