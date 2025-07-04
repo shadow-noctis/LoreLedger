@@ -17,6 +17,7 @@ def main():
                 print("   options - Show commands menu")
                 print("   list    - List all characters")
                 print("   read    - View a specific character info")
+                print("   search  - Search by story/name (Not yet available)")
                 print("   add     - Add a new character")
                 print("   edit    - Edit a character")
                 print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
@@ -28,6 +29,8 @@ def main():
                 read_character.list_all()
             case "read":
                 read_character.read()
+            case "search":
+                print("Search not yet available.")
             case "add":
                 write_character.new_character()
             case "edit":
@@ -35,7 +38,7 @@ def main():
             case "delete":
                 write_character.delete()
             case "exit":
-                print("Exiting LoreLedger...\nBye bye!")
+                print("Exiting LoreLedger...\nGoodbye!")
                 return
             case _:
                 print("Unknown command. Type 'options' to see all available commands.")

@@ -17,7 +17,6 @@ def if_restart(message, yes_priority=False, no_priority=False):
     no_set = {"no", "n"}
     while True:
         response = input(message).lower().strip()
-        print(response)
         if response == "exit":
             confirm_exit()
         elif response in yes_set:

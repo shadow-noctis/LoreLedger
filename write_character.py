@@ -36,7 +36,7 @@ def new_character():
 
         #To be added:
         """
-            Better error handling (if name is empty etc.)
+            Better options for user (if name is empty etc.)
                 Options:
                     1. Edit Character (later implementation)
                     2. Overwrite old
@@ -45,41 +45,18 @@ def new_character():
         """
 
         #Collect necessary information:
+        story = input("Appears in: ")
+        story = to_list(story)
         age = input("Age: ")
         gender = input("Gender: ")
-        family = input("Family members: ")
-        story = input ("Appears in:  ")
-        # Collect appearance features:
-        appearance = []
-
-        print("\nSuggested way to enter appearance:")
-        print(" -  Start with a general description")
-        print(" -  Then add specific features (e.g. 'Scar on left cheek')")
-        print("You can stop at any time by pressing Enter with no input\n")
-        add_appearance = True
-        while add_appearance:
-            appearance_detail = input("Appearance detail: ").strip()
-            if appearance_detail == "":
-                break
-            appearance.append(appearance_detail)
-            if ui.if_restart("Add another detail? (y/N) ", no_priority=True) == False:
-                add_appearance = False
-            else:
-                continue
-
-
-        # Turn family and story input to lists:
-        family = to_list(family)
-        story = to_list(story)
-        
+        family = add_list_field("Family", message="Add another family member: ")
         
         # Add character info into dictionary
         characters[name] = {
+            "Titles": story,
             "Age": age,
             "Gender": gender,
-            "Family": family,
-            "Appearance": appearance,
-            "Titles": story
+            "Family": family
         }
         
         print(f" === {name} === ")
@@ -98,9 +75,25 @@ def new_character():
         if ui.if_restart("Add another character? [Y/n] ", yes_priority=True) == False:
             print("Returning to Main Menu... ")
             return
-        
+
 def to_list(items):
     return items.strip().split(", ")
+
+def add_list_field(field, message="Add information to: "):
+    print(f"\nYou can add multiple items in {field} (Leave empty to stop)")
+    print("Useful tip: type 'drop' to cancel previous input\n")
+    to_add_list = []
+    while True:
+        to_add = input(message)
+        if to_add.strip() == "":
+            return to_add_list
+        elif to_add.strip().lower() == "drop":
+            if len(to_add_list) == 0:
+                print(f"Your current {field} is empty")
+        else:
+            to_add_list.append(to_add)
+        print(f"{field}: {to_add_list}")
+
 
 def delete():
     print("            === Deletion options: ===   \n")
@@ -170,8 +163,7 @@ def delete_character():
                 continue
             elif len(matches) == 1:
                 print(f"One close match found:\n   - {matches[0]}")
-                if_right = input(f"Would you like to delete character {matches[0]}? (y/N) ")
-                if if_right == "y" or if_right == "yes":
+                if ui.if_restart(f"Would you like to delete character {matches[0]}? (y/N) ", no_priority=True) == False:
                     to_delete = matches[0]
                 else:
                     print("To list all characters instead type 'list'")
@@ -187,15 +179,10 @@ def delete_character():
 
         print("\n                === WARNING ===")
         print(f"You are about to delete character: {to_delete}")
-        confirm = input(f"Are you sure you want to proceed? (y/N) ").lower()
-        if confirm != "y" and confirm != "yes":
-            print("Delete canceled: Your character remains safe.")
-            new = input("Would you like to delete another character? (y/N) ")
-            if new != "yes" and new != "y":
-                print("Returning to Main Menu...")
-                return
-            else:
-                continue
+        if ui.if_restart(f"Are you sure you want to proceed? (y/N) ") == False:
+            print("Delete canceled")
+            continue
+
         print(f"Deleting character {to_delete}...")
         characters.pop(to_delete)
         load.save_characters(characters)
