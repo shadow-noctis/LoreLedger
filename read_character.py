@@ -44,8 +44,14 @@ def read():
         #Print all values
         print(name)
         for key in characters[name]:
-            print(f"{key}: {characters[name][key]}")
+            if type(characters[name][key]) == list:
+                print(f"{key}:")
+                for item in characters[name][key]:
+                    print(f"  - {item}")
+            else:
+                print(f"{key}: {characters[name][key]}")
         print()
+
         if ui.if_restart("Would you like to view another character (Y/n) ", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return

@@ -9,27 +9,29 @@ def new_character():
         characters = load.load_characters()
         
         print("\n=== Adding new Character ===")
-        name = input("Name: ")
-
-        if name == "back":
+        surname = input("Surname: ")
+        if surname.lower() == "back":
             return
-        elif name == "exit":
+        elif surname.lower() == "exit":
             ui.confirm_exit()
+
+        given_name = input("Given names: ")
+        name = f"{given_name} {surname}"
         
         #Check if character already exists and return if True:
         if name in characters:
-            print("Character already exists.\nExiting...")
-            return
+            print("Character already exists.\n")
+            continue
 
         #Check if part of name already exists:
-        matches = matching.partial_matches(characters, name)
+        matches = matching.partial_matches(characters, given_name, surname)
         if matches != []:
             print("Similar names found:\n")
             for match in matches:
                 print(match)
             print()
             if ui.if_restart(f"Continue creating new character with name {name}? (Y/n) ", yes_priority=True) == False:
-                print(f"Character creation canceled with name {name}...")
+                print("Character creation canceled...")
                 continue
 
         #To be added:
@@ -53,17 +55,17 @@ def new_character():
         print("\nSuggested way to enter appearance:")
         print(" -  Start with a general description")
         print(" -  Then add specific features (e.g. 'Scar on left cheek')")
-        print("You can stop at any time by pressing Enter with no input\n.")
+        print("You can stop at any time by pressing Enter with no input\n")
         add_appearance = True
         while add_appearance:
             appearance_detail = input("Appearance detail: ").strip()
-            print(appearance_detail)
             if appearance_detail == "":
                 break
             appearance.append(appearance_detail)
-            add = input("Add another detail? (y/N)").lower().strip()
-            if add != "y" and add != "yes" and add != "":
+            if ui.if_restart("Add another detail? (y/N) ", no_priority=True) == False:
                 add_appearance = False
+            else:
+                continue
 
 
         # Turn family and story input to lists:
@@ -84,7 +86,7 @@ def new_character():
         for key in characters[name]:
             print(f"  - {key}: {characters[name][key]}")
 
-        if ui.if_restart("Add character to LoreLedger? [Y/n]", yes_priority=True) == False:
+        if ui.if_restart("Add character to LoreLedger? [Y/n] ", yes_priority=True) == False:
             print("Character creation cancelled...")
             continue
 
@@ -93,7 +95,7 @@ def new_character():
         print("Character succesfully added to your LoreLedger!\n")
 
         #Ask if user wants to add another character
-        if ui.if_restart("Add another character? [Y/n] ") == False:
+        if ui.if_restart("Add another character? [Y/n] ", yes_priority=True) == False:
             print("Returning to Main Menu... ")
             return
         
@@ -294,7 +296,8 @@ def get_field(characters, name):
             i += 1
             print(f"{i}. {key}")
             fields.append(key)
-        field = input("(Enter number) Which field would you like to edit: ").strip().capitalize()
+        print("\nEnter the number or name of field")
+        field = input("Which field would you like to edit: ").strip().capitalize()
         if field == "Back":
             return "BACK"
         elif field == "New":

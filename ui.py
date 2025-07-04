@@ -2,7 +2,7 @@ import sys
 
 def confirm_exit():
     while True:
-        confirm = input("Are you sure you wish to exit LoreLedger? (y/n)")
+        confirm = input("Are you sure you wish to exit LoreLedger? (y/n) ")
         if confirm == "y" or confirm == "yes":
             print("Exiting LoreLedger...\nGoodbye!")
             sys.exit()
@@ -17,6 +17,7 @@ def if_restart(message, yes_priority=False, no_priority=False):
     no_set = {"no", "n"}
     while True:
         response = input(message).lower().strip()
+        print(response)
         if response == "exit":
             confirm_exit()
         elif response in yes_set:
