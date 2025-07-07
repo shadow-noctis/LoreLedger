@@ -28,7 +28,7 @@ def new_character():
         if matches != []:
             print("Similar names found:\n")
             for match in matches:
-                print(match)
+                print(f" - {match} {surname}")
             print()
             if ui.if_restart(f"Continue creating new character with name {name}? (Y/n) ", yes_priority=True) == False:
                 print("Character creation canceled...")
@@ -45,23 +45,37 @@ def new_character():
         """
 
         #Collect necessary information:
-        story = input("Appears in: ")
-        story = to_list(story)
         age = input("Age: ")
         gender = input("Gender: ")
-        family = add_list_field("Family", message="Add another family member: ")
+        print("You can add story titles and family members separated by comma or type '/detailed' to add one item at time.")
+        family = input("Family members: ").strip()
+        if family.lower() == "/detailed":
+            family = add_list_field("Family", message="Add family member: ")
+        else:
+            family = to_list(family)
+        story = input("Titles related to character: ").strip()
+        if story.lower() == "/detailed":
+            story = add_list_field("Titles", message="Add related title: ")
+        else:
+            story = to_list(story)
         
         # Add character info into dictionary
         characters[name] = {
-            "Titles": story,
             "Age": age,
             "Gender": gender,
-            "Family": family
+            "Family": family,
+            "Titles": story
         }
+
+        if ui.if_restart("Would you like to add custom fields? (y/N) ", no_priority=True):
+            custom_fields = add_custom_fields()
+            for custom_field in custom_fields:
+                characters[name][custom_field[0]] = custom_field[1]
         
-        print(f" === {name} === ")
+        print(f"\n === {name} === ")
         for key in characters[name]:
             print(f"  - {key}: {characters[name][key]}")
+        print()
 
         if ui.if_restart("Add character to LoreLedger? [Y/n] ", yes_priority=True) == False:
             print("Character creation cancelled...")
@@ -76,10 +90,12 @@ def new_character():
             print("Returning to Main Menu... ")
             return
 
+# Turn comma separated items to a list
 def to_list(items):
     return items.strip().split(", ")
 
-def add_list_field(field, message="Add information to: "):
+# Add list item by item option or add custom field if list
+def add_list_field(field, message="Add: "):
     print(f"\nYou can add multiple items in {field} (Leave empty to stop)")
     print("Useful tip: type 'drop' to cancel previous input\n")
     to_add_list = []
@@ -90,11 +106,34 @@ def add_list_field(field, message="Add information to: "):
         elif to_add.strip().lower() == "drop":
             if len(to_add_list) == 0:
                 print(f"Your current {field} is empty")
+            to_add_list.pop()
         else:
             to_add_list.append(to_add)
         print(f"{field}: {to_add_list}")
 
 
+def add_custom_fields():
+    print("\nAdd first descriptive name (Skills, Appearance, Home town, etc.)")
+    print("Add then relative information to that field\n")
+    custom_fields = []
+    while True:
+        #Ask for custom field name
+        field = input("Custom field name: ")
+        if ui.if_restart(f"Is {field} a list? (y/N): ", no_priority=True):
+            #If the custom field is list, collect the values with add_list_field:
+            field_value = add_list_field(field, f"{field}: ")
+        #Otherwise ask for the value for the field
+        else:
+            field_value = input(f"{field}: ")
+        #Append to custom_fields list as a tuple:
+        custom_fields.append((field, field_value))
+        #Ask if user wants to add another custom field and return all custom field tuples as list to use.
+        if ui.if_restart("Would you like to add another custom field? (Y/n): ", yes_priority=True) == False:
+            return custom_fields
+
+
+
+#Menu for deleting
 def delete():
     print("            === Deletion options: ===   \n")
     print("  all         -  delete *ALL* characters.")
@@ -127,6 +166,7 @@ def delete():
                 continue
         return
 
+#Delete all characters:
 def delete_all():
     print("                         === WARNING === ")
     print("You are about to delete ALL characters currently stored in your LoreLedger")
@@ -140,6 +180,7 @@ def delete_all():
     print("Canceling delete...")
     return
 
+#Delete single character
 def delete_character():
     print("                         === WARNING === ")
     print("You are about to delete a character currently stored in your LoreLedger")
