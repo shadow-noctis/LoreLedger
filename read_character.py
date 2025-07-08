@@ -42,7 +42,7 @@ def read():
                 continue
 
         #Print all values
-        print(name)
+        print(f"=== {name} ===")
         for key in characters[name]:
             if type(characters[name][key]) == list:
                 print(f"{key}:")
@@ -51,7 +51,3 @@ def read():
             else:
                 print(f"{key}: {characters[name][key]}")
         print()
-
-        if ui.if_restart("Would you like to view another character (Y/n) ", yes_priority=True) == False:
-            print("Returning to Main Menu...")
-            return

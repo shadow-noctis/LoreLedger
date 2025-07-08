@@ -25,4 +25,4 @@ def partial_matches(characters, given_name, surname=None):
         matching = characters_by_surname(characters, surname)
     else:
         matching = list_characters(characters)
-    return get_close_matches(given_name, matching, cutoff=0.4)
+    return get_close_matches(given_name, matching, cutoff=0.5)

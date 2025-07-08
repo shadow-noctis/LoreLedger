@@ -1,3 +1,4 @@
+import copy
 import load
 import matching
 import read_character
@@ -237,7 +238,7 @@ def edit_character():
     while True:
 
         to_edit = input("Which character would you like to edit? ")
-        #List all characters before restarting the loop
+        #"list" gives option to list all characters before restarting the loop
         if to_edit == "list":
             read_character.list_all()
             continue
@@ -250,16 +251,18 @@ def edit_character():
             if matches == []:
                 print("Error: Character not found.")
                 print("Please try another name or type 'list' to view all characters.")
+                continue
 
-            #One match found: Asks user if they want to edit that character
-            if len(matches) == 1:
+            #One match found: Asks user if they want to edit that character:
+            elif len(matches) == 1:
                 print("Similar name found:\n")
                 print(f"  - {matches[0]}\n")
-                if ui.if_restart(f"Would you like to edit {matches[0]}? (y/N) ", no_priority=True) == False:
+                if ui.if_restart(f"Would you like to edit {matches[0]}? (Y/n) ", yes_priority=True) == False:
                     print("Please try another name or type 'list' to list all characters")
                     continue
                 else:
                     to_edit = matches[0]
+
             #Multiple matches found. List them and ask for a new name
             #Further development: numbered list user can choose from
             else:
@@ -268,53 +271,72 @@ def edit_character():
                     print(f"  - {name}")
                 continue
 
-        #Asks user which field to edit (Name, Family, ect.)
-        field = get_field(characters, to_edit)
-        if field == "BACK":
-            print("Returning to Main Menu...")
-            return
-        elif field == "RESTART":
-            continue
-        if field != "Name":
-        #If field is a list, append new information into it.
-            if type(characters[to_edit][field]) is list:
-                    
-                new_info = input(f"Add to {field}: ")
-                old_info = characters[to_edit][field].copy()
-                new_list = old_info.copy()
-                new_list.append(new_info)
-                new_info = new_list
-            else:
-                new_info = input(f"Change {field} to: ")
-                old_info = characters[to_edit][field]
-        else:
-            new_info = input(f"Change {field} to: ")
-            old_info = to_edit
+        # Save unedited character and edit copy or the dictionary
+        edited = copy.deepcopy(characters) 
+        old_character = copy.deepcopy(characters[to_edit])
+        name, updated = get_edit_info(edited, to_edit)
 
-        #Let's user view the changes to be made:
-        print("\n   === EDIT DETAILS ===")
-        print(f"\n  == {to_edit} ==")
-        print(f"Old details    {field}: {old_info}")
-        print(f"New details    {field}: {new_info}")
+        if updated == False:
+            print("Edit cancelled...")
+            continue
+
+        print("\n   === EDIT DETAILS ===\n")
+        print("Previous character information:\n")
+        print(f" === {to_edit} === ")
+        for key in old_character:
+            print(f"{key}: {old_character[key]}")
+
+        print()
+        print(" == New Information: == \n")
+        print(f" === {name} === ")
+        for key in updated:
+            print(f"{key}: {updated[key]}")
 
         #Confirm changes:
         if ui.if_restart("Save changes? (Y/n) ", yes_priority=True) == False:
             print("Character edit canceled")
             
         #Save to JSON file:
-        if field != "Name":
-            characters[to_edit][field] = new_info
-        else:
-            characters[new_info] = characters.pop(to_edit)
-
-        load.save_characters(characters)
+        load.save_characters(edited)
         print("== Character succesfully updated ==\n")
 
         if ui.if_restart("Would you like to edit another character? (Y/n) ", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return
 
+#Helper function to search for
+def get_edit_info(characters, name):
+    while True:
+        field = get_field(characters, name)
+        if field == "BACK":
+            return name, False
+        # If field is a list, append new information into it.
+        elif field != "Name":
+            if type(characters[name][field]) is list:
+                print("To instead delete from list type '/delete'")
+                new_info = input(f"Add to {field}: ").strip()
+                if new_info.lower() == "/delete":
+                    updated_list = delete_from_list(name)
+                    characters[name][field] = updated_list
+                else:
+                    characters[name][field].append(new_info)
+            else:
+                new_info = input(f"Change {field} to: ")
+                characters[name][field] = new_info
+        else: 
+            new_name = input("New Name: ")
+            characters[new_name] = characters.pop(name)
+            name = new_name
 
+        if ui.if_restart("Continue editing? (Y/n)", yes_priority=True) == False:
+            return name, characters[name]
+
+
+def delete_from_list(characters, name):
+    print("not yet availabe")
+    return
+
+#Number each key for the specific character and number them. Allows to choose which to edit
 def get_field(characters, name):
     while True:
         i = 1
@@ -326,10 +348,8 @@ def get_field(characters, name):
             fields.append(key)
         print("\nEnter the number or name of field")
         field = input("Which field would you like to edit: ").strip().capitalize()
-        if field == "Back":
+        if field == "Back" or field == "New":
             return "BACK"
-        elif field == "New":
-            return "RESTART"
         elif field == "Exit":
             ui.confirm_exit()
         elif field not in fields:
@@ -345,6 +365,3 @@ def get_field(characters, name):
                 print("To edit another character type in 'new'")
         else:
             return field
-        
-def edit_name():
-    print("Unavailable")
