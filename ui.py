@@ -15,6 +15,12 @@ def confirm_exit():
 def if_restart(message, yes_priority=False, no_priority=False):
     yes_set = {"yes", "y"}
     no_set = {"no", "n"}
+    if yes_priority:
+        message = f"{message} [Y/n]: "
+    elif no_priority:
+        message = f"{message} [y/N]: "
+    else:
+        message = f"{message} [y/n]: "
     while True:
         response = input(message).lower().strip()
         if response == "exit":

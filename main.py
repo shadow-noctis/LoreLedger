@@ -1,5 +1,6 @@
 import read_character
 import write_character
+import delete_character
 
 def main():
     print(" === Welcome to LoreLedger! ===\n")
@@ -36,7 +37,7 @@ def main():
             case "edit":
                 write_character.edit_character()
             case "delete":
-                write_character.delete()
+                delete_character.delete()
             case "exit":
                 print("Exiting LoreLedger...\nGoodbye!")
                 return

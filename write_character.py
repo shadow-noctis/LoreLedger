@@ -31,7 +31,7 @@ def new_character():
             for match in matches:
                 print(f" - {match} {surname}")
             print()
-            if ui.if_restart(f"Continue creating new character with name {name}? (Y/n) ", yes_priority=True) == False:
+            if ui.if_restart(f"Continue creating new character with name {name}?", yes_priority=True) == False:
                 print("Character creation canceled...")
                 continue
 
@@ -68,7 +68,7 @@ def new_character():
             "Titles": story
         }
 
-        if ui.if_restart("Would you like to add custom fields? (y/N) ", no_priority=True):
+        if ui.if_restart("Would you like to add custom fields?", no_priority=True):
             custom_fields = add_custom_fields()
             for custom_field in custom_fields:
                 characters[name][custom_field[0]] = custom_field[1]
@@ -78,7 +78,7 @@ def new_character():
             print(f"  - {key}: {characters[name][key]}")
         print()
 
-        if ui.if_restart("Add character to LoreLedger? [Y/n] ", yes_priority=True) == False:
+        if ui.if_restart("Add character to LoreLedger?", yes_priority=True) == False:
             print("Character creation cancelled...")
             continue
 
@@ -87,7 +87,7 @@ def new_character():
         print("Character succesfully added to your LoreLedger!\n")
 
         #Ask if user wants to add another character
-        if ui.if_restart("Add another character? [Y/n] ", yes_priority=True) == False:
+        if ui.if_restart("Add another character?", yes_priority=True) == False:
             print("Returning to Main Menu... ")
             return
 
@@ -120,7 +120,7 @@ def add_custom_fields():
     while True:
         #Ask for custom field name
         field = input("Custom field name: ")
-        if ui.if_restart(f"Is {field} a list? (y/N): ", no_priority=True):
+        if ui.if_restart(f"Is {field} a list?", no_priority=True):
             #If the custom field is list, collect the values with add_list_field:
             field_value = add_list_field(field, f"{field}: ")
         #Otherwise ask for the value for the field
@@ -129,109 +129,9 @@ def add_custom_fields():
         #Append to custom_fields list as a tuple:
         custom_fields.append((field, field_value))
         #Ask if user wants to add another custom field and return all custom field tuples as list to use.
-        if ui.if_restart("Would you like to add another custom field? (Y/n): ", yes_priority=True) == False:
+        if ui.if_restart("Would you like to add another custom field?", yes_priority=True) == False:
             return custom_fields
 
-
-
-#Menu for deleting
-def delete():
-    print("            === Deletion options: ===   \n")
-    print("  all         -  delete *ALL* characters.")
-    print("  character   -  delete specific character from LoreLedger")
-    print("  rule        -  delete all characters with specific condition (e.g. delete all characters of specific story)")
-    print("  clearbackup -  delete your backup (Note! Backup not yet available.)")
-    print("  back        -  return to main menu\n")
-    print("                        === Important ===")
-    print("LoreLedger does not currently have option to recover deleted files.")
-    print("         Deleting character info will be permanent\n")
-    print("             ~ Happy deleting will lead to void ~\n")
-
-    while True:
-        delete_type = input("What would you like to delete: ")
-        match delete_type:
-            case "all":
-                delete_all()
-            case "character":
-                delete_character()
-            case "rule":
-                print("Rule deleting not yet available (Coming soon)")
-            case "clearbackup":
-                print("Backup not yet available. Practice caution when deleting something from your LoreLedger.")
-            case "back":
-                return
-            case "exit":
-                return
-            case _:
-                print("Unknown command. Please refer to the list above or return to main menu by typing 'back'")
-                continue
-        return
-
-#Delete all characters:
-def delete_all():
-    print("                         === WARNING === ")
-    print("You are about to delete ALL characters currently stored in your LoreLedger")
-    print("LoreLedger does *not* currently support backup. *All* files will be permanently deleted.")
-    confirm = input("Please type in 'delete all my characters' to confirm you wish to proceed: ")
-    if confirm == "delete all my characters":
-        print("Deleting all characters...")
-        load.save_characters({})
-        print("Your LoreLedger is now empty.\nReturning back to Main Menu")
-        return
-    print("Canceling delete...")
-    return
-
-#Delete single character
-def delete_character():
-    print("                         === WARNING === ")
-    print("You are about to delete a character currently stored in your LoreLedger")
-    print("         LoreLedger does *not* currently support backup.")
-    print("            ~ Happy deleating will lead to void ~\n")
-    while True:
-        to_delete = input("Which character would you like to delete: ")
-        characters = load.load_characters()
-        if to_delete == "back" or to_delete == "exit":
-            return
-        elif to_delete == "list":
-            read_character.list_all()
-            continue
-        if to_delete not in characters:
-            print("Exact match not found...")
-            print("Searching for close matches...")
-            matches = matching.partial_matches(characters, to_delete)
-            if len(matches) == 0:
-                print("Error: Character not found.")
-                print("To instead move to listing all characters type: 'list'")
-                continue
-            elif len(matches) == 1:
-                print(f"One close match found:\n   - {matches[0]}")
-                if ui.if_restart(f"Would you like to delete character {matches[0]}? (y/N) ", no_priority=True) == False:
-                    to_delete = matches[0]
-                else:
-                    print("To list all characters instead type 'list'")
-                    continue
-            else:
-                print("Close matches found.")
-                print("Did you mean: ")
-                print()
-                for match in matches:
-                    print(f"- {match}")
-                print()
-                continue
-
-        print("\n                === WARNING ===")
-        print(f"You are about to delete character: {to_delete}")
-        if ui.if_restart(f"Are you sure you want to proceed? (y/N) ") == False:
-            print("Delete canceled")
-            continue
-
-        print(f"Deleting character {to_delete}...")
-        characters.pop(to_delete)
-        load.save_characters(characters)
-        print("== Character succesfully deleted from your LoreLedger. ==")
-        if ui.if_restart("Delete another character? [y/N] ", no_priority=True) == False:
-            print("Returning to Main Menu...")
-            return
         
 def edit_character():
     characters = load.load_characters()
@@ -257,7 +157,7 @@ def edit_character():
             elif len(matches) == 1:
                 print("Similar name found:\n")
                 print(f"  - {matches[0]}\n")
-                if ui.if_restart(f"Would you like to edit {matches[0]}? (Y/n) ", yes_priority=True) == False:
+                if ui.if_restart(f"Would you like to edit {matches[0]}?", yes_priority=True) == False:
                     print("Please try another name or type 'list' to list all characters")
                     continue
                 else:
@@ -293,14 +193,14 @@ def edit_character():
             print(f"{key}: {updated[key]}")
 
         #Confirm changes:
-        if ui.if_restart("Save changes? (Y/n) ", yes_priority=True) == False:
+        if ui.if_restart("Save changes?", yes_priority=True) == False:
             print("Character edit canceled")
             
         #Save to JSON file:
         load.save_characters(edited)
         print("== Character succesfully updated ==\n")
 
-        if ui.if_restart("Would you like to edit another character? (Y/n) ", yes_priority=True) == False:
+        if ui.if_restart("Would you like to edit another character?", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return
 
@@ -328,7 +228,7 @@ def get_edit_info(characters, name):
             characters[new_name] = characters.pop(name)
             name = new_name
 
-        if ui.if_restart("Continue editing? (Y/n)", yes_priority=True) == False:
+        if ui.if_restart("Continue editing?", yes_priority=True) == False:
             return name, characters[name]
 
 
