@@ -16,6 +16,14 @@ A simple command-line app to keep track of all the characters in your stories.
 - Flexible character sheets and search
 - create web-based version
 
+## Getting Started
+
+1. Clone repository:
+git clone https://github.com/shadow-noctis/LoreLedger.git
+2. Run the app:
+python3 main.py
+
+
 ## Technologies
 
 - Python 3

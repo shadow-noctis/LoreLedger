@@ -69,9 +69,7 @@ def new_character():
         }
 
         if ui.if_restart("Would you like to add custom fields?", no_priority=True):
-            custom_fields = add_custom_fields()
-            for custom_field in custom_fields:
-                characters[name][custom_field[0]] = custom_field[1]
+            add_custom_fields(characters[name])
         
         print(f"\n === {name} === ")
         for key in characters[name]:
@@ -98,25 +96,23 @@ def to_list(items):
 # Add list item by item option or add custom field if list
 def add_list_field(field, message="Add: "):
     print(f"\nYou can add multiple items in {field} (Leave empty to stop)")
-    print("Useful tip: type 'drop' to cancel previous input\n")
+    print("Useful tip: type '/drop' to cancel previous input\n")
     to_add_list = []
     while True:
         to_add = input(message)
         if to_add.strip() == "":
             return to_add_list
-        elif to_add.strip().lower() == "drop":
+        elif to_add.strip().lower() == "/drop":
             if len(to_add_list) == 0:
-                print(f"Your current {field} is empty")
+                print(f"{field} is already empty")
             to_add_list.pop()
         else:
             to_add_list.append(to_add)
-        print(f"{field}: {to_add_list}")
 
 
-def add_custom_fields():
+def add_custom_fields(character):
     print("\nAdd first descriptive name (Skills, Appearance, Home town, etc.)")
     print("Add then relative information to that field\n")
-    custom_fields = []
     while True:
         #Ask for custom field name
         field = input("Custom field name: ")
@@ -127,10 +123,10 @@ def add_custom_fields():
         else:
             field_value = input(f"{field}: ")
         #Append to custom_fields list as a tuple:
-        custom_fields.append((field, field_value))
+        character[field] = field_value
         #Ask if user wants to add another custom field and return all custom field tuples as list to use.
         if ui.if_restart("Would you like to add another custom field?", yes_priority=True) == False:
-            return custom_fields
+            return character
 
         
 def edit_character():
@@ -142,6 +138,9 @@ def edit_character():
         if to_edit == "list":
             read_character.list_all()
             continue
+        elif to_edit.lower().strip() == "back":
+            print("Returning to Main Menu...")
+            return
         #No exact match found
         if to_edit not in characters:
             print("Character not found in LoreLedger")
@@ -207,19 +206,17 @@ def edit_character():
 #Helper function to search for
 def get_edit_info(characters, name):
     while True:
-        field = get_field(characters, name)
+        field = get_field(characters[name], show_add_option=True)
         if field == "BACK":
             return name, False
         # If field is a list, append new information into it.
+        elif field == "Add":
+            add_custom_fields(characters[name])
+
         elif field != "Name":
             if type(characters[name][field]) is list:
-                print("To instead delete from list type '/delete'")
                 new_info = input(f"Add to {field}: ").strip()
-                if new_info.lower() == "/delete":
-                    updated_list = delete_from_list(name)
-                    characters[name][field] = updated_list
-                else:
-                    characters[name][field].append(new_info)
+                characters[name][field].append(new_info)
             else:
                 new_info = input(f"Change {field} to: ")
                 characters[name][field] = new_info
@@ -237,31 +234,53 @@ def delete_from_list(characters, name):
     return
 
 #Number each key for the specific character and number them. Allows to choose which to edit
-def get_field(characters, name):
+def get_field(character, show_add_option=False, show_delete_option=False):
     while True:
         i = 1
         fields = ["Name"]
         print("1. Name")
-        for key in characters[name]:
+        #Print all options:
+        for key in character:
             i += 1
             print(f"{i}. {key}")
             fields.append(key)
+        
+        if show_add_option:
+            i += 1
+            print(f"{i}. Add new field")
+            fields.append("Add")
+
+        if show_delete_option:
+            i += 1
+            print(f"{i}. Delete field")
+            fields.append("Delete")
+
         print("\nEnter the number or name of field")
-        field = input("Which field would you like to edit: ").strip().capitalize()
-        if field == "Back" or field == "New":
+        field = input("Which field would you like to edit: ").strip()
+        if field.lower() == "back":
             return "BACK"
-        elif field == "Exit":
+        elif field.lower() == "exit":
             ui.confirm_exit()
-        elif field not in fields:
-            field.strip(".")
+
+        #Clean field name and capitalize it for comparison of all keys
+        field_clean = field.strip().capitalize()
+
+        if field_clean == "Add new field":
+            field_clean == "Add"
+        elif field_clean == "Delete field":
+            field_clean == "Delete"
+
+        if field_clean in fields:
+            return field_clean
+        
+        else:
             try:
-                if int(field) > i or int(field) < 1:
-                    print(f"Error: No option {int(field)}.")
-                else:
+                choice = int(field)
+                if 1 <= choice <= len(fields):
                     return fields[int(field) -1]
-            except:
+                else:
+                    print(f"Error: No option {field}")       
+            except ValueError:
                 print("Error: field not found")
                 print("Type only number or name of field (without number)")
                 print("To edit another character type in 'new'")
-        else:
-            return field
