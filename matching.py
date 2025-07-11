@@ -26,3 +26,9 @@ def partial_matches(characters, given_name, surname=None):
     else:
         matching = list_characters(characters)
     return get_close_matches(given_name, matching, cutoff=0.5)
+
+def print_numbered_list(to_number):
+    i = 1
+    for item in to_number:
+        print(f"{i}. {item}")
+        i += 1

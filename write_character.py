@@ -130,9 +130,9 @@ def add_custom_fields(character):
 
         
 def edit_character():
-    characters = load.load_characters()
     while True:
-
+        
+        characters = load.load_characters()
         to_edit = input("Which character would you like to edit? ")
         #"list" gives option to list all characters before restarting the loop
         if to_edit == "list":
@@ -194,6 +194,7 @@ def edit_character():
         #Confirm changes:
         if ui.if_restart("Save changes?", yes_priority=True) == False:
             print("Character edit canceled")
+            continue
             
         #Save to JSON file:
         load.save_characters(edited)
@@ -209,24 +210,66 @@ def get_edit_info(characters, name):
         field = get_field(characters[name], show_add_option=True)
         if field == "BACK":
             return name, False
-        # If field is a list, append new information into it.
+        #Add custom fields to character:
         elif field == "Add":
             add_custom_fields(characters[name])
 
-        elif field != "Name":
-            if type(characters[name][field]) is list:
-                new_info = input(f"Add to {field}: ").strip()
-                characters[name][field].append(new_info)
-            else:
-                new_info = input(f"Change {field} to: ")
-                characters[name][field] = new_info
-        else: 
-            new_name = input("New Name: ")
-            characters[new_name] = characters.pop(name)
-            name = new_name
+        #Edit character:
+        else:
+
+            while True:
+                action = input(f"Would you like to edit or delete {field}? (edit/delete): ").lower().strip()
+
+                #Delete field instead of 
+                if action == "delete":
+                    handle_delete_field(characters[name], field)
+                    break
+                elif action == "edit":
+
+                    #Edit field
+                    if field != "Name":
+                        if type(characters[name][field]) is list:
+                            new_info = input(f"Add to {field}: ").strip()
+                            characters[name][field].append(new_info)
+                        else:
+                            new_info = input(f"Change {field} to: ")
+                            characters[name][field] = new_info
+                    else: 
+                        new_name = input("New Name: ")
+                        characters[new_name] = characters.pop(name)
+                        name = new_name
+                    break
+                else:
+                    print("Invalid option. Please type 'edit' or 'delete'.")
 
         if ui.if_restart("Continue editing?", yes_priority=True) == False:
             return name, characters[name]
+
+
+def handle_delete_field(character, field):
+    if isinstance(character[field], list):
+        matching.print_numbered_list(character[field])
+        choice = input("\nType the number of the item to remove or type 'all' to delete the entire field: ").strip()
+        if choice == "all":
+            del character[field]
+            print(f"{field} deleted")
+        else:
+            try:
+                index = int(choice) -1
+                if 0 <= index < len(character[field]):
+                    deleted = character[field].pop(index)
+                    print(f"{deleted} deleted from {field}")
+                else:
+                    print("Invalid number")
+            except ValueError:
+                print("Invalid input.")
+    else:
+        if ui.if_restart(f"Delete entire field: {field}?"):
+            del character[field]
+            print(f"{field} deleted")
+        else:
+            print("Deletion cancelled")
+
 
 
 def delete_from_list(characters, name):
@@ -234,7 +277,7 @@ def delete_from_list(characters, name):
     return
 
 #Number each key for the specific character and number them. Allows to choose which to edit
-def get_field(character, show_add_option=False, show_delete_option=False):
+def get_field(character, show_add_option=False):
     while True:
         i = 1
         fields = ["Name"]
@@ -250,11 +293,6 @@ def get_field(character, show_add_option=False, show_delete_option=False):
             print(f"{i}. Add new field")
             fields.append("Add")
 
-        if show_delete_option:
-            i += 1
-            print(f"{i}. Delete field")
-            fields.append("Delete")
-
         print("\nEnter the number or name of field")
         field = input("Which field would you like to edit: ").strip()
         if field.lower() == "back":
@@ -267,8 +305,6 @@ def get_field(character, show_add_option=False, show_delete_option=False):
 
         if field_clean == "Add new field":
             field_clean == "Add"
-        elif field_clean == "Delete field":
-            field_clean == "Delete"
 
         if field_clean in fields:
             return field_clean
