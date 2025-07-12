@@ -3,6 +3,7 @@ import load
 import read_character
 import matching
 import os
+import shutil
 
 #Menu for deleting
 def delete():
@@ -41,28 +42,62 @@ def delete():
 def delete_all():
     print("                         === WARNING === ")
     print("You are about to delete ALL characters currently stored in your LoreLedger")
-    print("LoreLedger does *not* currently support backup. *All* files will be permanently deleted.")
     confirm = input("Please type in 'delete all my characters' to confirm you wish to proceed: ")
-    if confirm != "delete all my characters":
+    if confirm.lower() == "back":
+        print(" == Delete cancelled == ")
+        print("Returning to Main Menu...")
+        return
+    elif confirm != "delete all my characters":
         print(f"{confirm} does not match 'delete all my characters'")
         confirm = input("Please type in 'delete all my characters' to confirm you wish to proceed: ")
         if confirm != "delete all my characters":
             print(" == Delete cancelled == ")
             print("Returning to Main Menu...")
             return
+    #Create backup if needed:
+    if ui.if_restart("Would you like to backup your characters?"):
+        shutil.copy("characters.json", "characters_backup.json")
+        print("Backup created")
+
     print("Deleting all characters...")
     if os.path.exists("characters.json"):
         os.remove("characters.json")
         print("Your LoreLedger is now empty.\nReturning back to Main Menu")
     else:
         print("Your LoreLedger is already empty.\n Returning back to Main Menu")
-    return
+
+def backup():
+    print(" === Backup options ===")
+    print("  - Restore deleted characters currently not in your LoreLedger")
+    print("  - Restore characters after")
+
+def restore_backup():
+    print(" === RESTORE PREVIOUS STATE ===")
+    if os.path.exists("characters_backup.json") == False:
+        print("Error: No backup file found.")
+        print("Returning to Main Menu...")
+        return
+    print("\n== IMPORTANT! ==")
+    print("Restoring previus state will OVERWRITE current characters in your LoreLedger")
+    print("Use backup to restore previously deleted characters not in your LoreLedger anymore")
+    if ui.if_restart("Are you sure you want to return to previous state before delete all?"):     
+        characters = load.load_characters(file="characters_backup.json")
+        load.save_characters(characters)
+        os.remove("characters_backup.json")
+        print("Previous state succesfully restored\n")
+    else:
+        print("Restore cancelled")
+    print("Returning to Main menu...")
+
+
+def restore_deleted_characters():
+    pass
 
 #Delete single character
 def delete_character():
     print("                         === WARNING === ")
     print("You are about to delete a character currently stored in your LoreLedger")
-    print("         LoreLedger does *not* currently support backup.")
+    print("Restoring previously deleted characters is not currently possible")
     print("            ~ Happy deleating will lead to void ~\n")
     while True:
         to_delete = input("Which character would you like to delete: ")
@@ -82,10 +117,10 @@ def delete_character():
                 continue
             elif len(matches) == 1:
                 print(f"One close match found:\n   - {matches[0]}")
-                if ui.if_restart(f"Would you like to delete character {matches[0]}? (y/N) ", no_priority=True) == False:
+                if ui.if_restart(f"Would you like to delete character {matches[0]}?", no_priority=True) == False:
                     to_delete = matches[0]
                 else:
-                    print("To list all characters instead type 'list'")
+                    print("To list all characters type 'list'")
                     continue
             else:
                 print("Close matches found.")
@@ -98,7 +133,7 @@ def delete_character():
 
         print("\n                === WARNING ===")
         print(f"You are about to delete character: {to_delete}")
-        if ui.if_restart(f"Are you sure you want to proceed? (y/N) ") == False:
+        if ui.if_restart(f"Are you sure you want to proceed?") == False:
             print("Delete canceled")
             continue
 
@@ -106,6 +141,6 @@ def delete_character():
         characters.pop(to_delete)
         load.save_characters(characters)
         print("== Character succesfully deleted from your LoreLedger. ==")
-        if ui.if_restart("Delete another character? [y/N] ", no_priority=True) == False:
+        if ui.if_restart("Delete another character?", no_priority=True) == False:
             print("Returning to Main Menu...")
             return

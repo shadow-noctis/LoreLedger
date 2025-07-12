@@ -1,14 +1,14 @@
 import os
 import json
 
-def load_characters():
-    if os.path.isfile("characters.json"):
-        with open("characters.json", "r") as file:
+def load_characters(file="characters.json"):
+    if os.path.isfile(file):
+        with open(file, "r") as file:
             characters = json.load(file)
             return characters
     return {}
 
 
-def save_characters(characters):
-    with open("characters.json", "w") as out_file:
+def save_characters(characters, file="characters.json"):
+    with open(file, "w") as out_file:
         json.dump(characters, out_file, indent=4)

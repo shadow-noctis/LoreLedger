@@ -22,7 +22,8 @@ def main():
                 print("   add     - Add a new character")
                 print("   edit    - Edit a character")
                 print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
-                print("   restore - Restores previous state (Note! Backup is not yet available. Deleting is currently permanent action)")
+                print("   backup  - Restores previous state before delete all (This will overwrite your current characters stored in LoreLedger)")
+                print("   restore - Restores deleted characters currently not in your LoreLedger")
                 print("   back    - Return back to the main menu")
                 print("   exit    - Exit the program")
                 print()
@@ -38,6 +39,10 @@ def main():
                 write_character.edit_character()
             case "delete":
                 delete_character.delete()
+            case "backup":
+                delete_character.restore_backup()
+            case "restore":
+                print("Not yet available")
             case "exit":
                 print("Exiting LoreLedger...\nGoodbye!")
                 return
