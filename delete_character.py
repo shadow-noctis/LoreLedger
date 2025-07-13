@@ -66,11 +66,6 @@ def delete_all():
     else:
         print("Your LoreLedger is already empty.\n Returning back to Main Menu")
 
-def backup():
-    print(" === Backup options ===")
-    print("  - Restore deleted characters currently not in your LoreLedger")
-    print("  - Restore characters after")
-
 #Restore previous state before using delete_all
 def restore_backup():
     print(" === RESTORE PREVIOUS STATE ===")

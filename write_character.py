@@ -31,7 +31,7 @@ def new_character():
             for match in matches:
                 print(f" - {match} {surname}")
             print()
-            if ui.if_restart(f"Continue creating new character with name {name}?", yes_priority=True) == False:
+            if ui.if_yes_no(f"Continue creating new character with name {name}?", yes_priority=True) == False:
                 print("Character creation canceled...")
                 continue
 
@@ -68,7 +68,7 @@ def new_character():
             "Titles": story
         }
 
-        if ui.if_restart("Would you like to add custom fields?", no_priority=True):
+        if ui.if_yes_no("Would you like to add custom fields?", no_priority=True):
             add_custom_fields(characters[name])
         
         print(f"\n === {name} === ")
@@ -76,7 +76,7 @@ def new_character():
             print(f"  - {key}: {characters[name][key]}")
         print()
 
-        if ui.if_restart("Add character to LoreLedger?", yes_priority=True) == False:
+        if ui.if_yes_no("Add character to LoreLedger?", yes_priority=True) == False:
             print("Character creation cancelled...")
             continue
 
@@ -85,7 +85,7 @@ def new_character():
         print("Character succesfully added to your LoreLedger!\n")
 
         #Ask if user wants to add another character
-        if ui.if_restart("Add another character?", yes_priority=True) == False:
+        if ui.if_yes_no("Add another character?", yes_priority=True) == False:
             print("Returning to Main Menu... ")
             return
 
@@ -116,7 +116,7 @@ def add_custom_fields(character):
     while True:
         #Ask for custom field name
         field = input("Custom field name: ")
-        if ui.if_restart(f"Is {field} a list?", no_priority=True):
+        if ui.if_yes_no(f"Is {field} a list?", no_priority=True):
             #If the custom field is list, collect the values with add_list_field:
             field_value = add_list_field(field, f"{field}: ")
         #Otherwise ask for the value for the field
@@ -125,7 +125,7 @@ def add_custom_fields(character):
         #Append to custom_fields list as a tuple:
         character[field] = field_value
         #Ask if user wants to add another custom field and return all custom field tuples as list to use.
-        if ui.if_restart("Would you like to add another custom field?", yes_priority=True) == False:
+        if ui.if_yes_no("Would you like to add another custom field?", yes_priority=True) == False:
             return character
 
         
@@ -156,7 +156,7 @@ def edit_character():
             elif len(matches) == 1:
                 print("Similar name found:\n")
                 print(f"  - {matches[0]}\n")
-                if ui.if_restart(f"Would you like to edit {matches[0]}?", yes_priority=True) == False:
+                if ui.if_yes_no(f"Would you like to edit {matches[0]}?", yes_priority=True) == False:
                     print("Please try another name or type 'list' to list all characters")
                     continue
                 else:
@@ -192,7 +192,7 @@ def edit_character():
             print(f"{key}: {updated[key]}")
 
         #Confirm changes:
-        if ui.if_restart("Save changes?", yes_priority=True) == False:
+        if ui.if_yes_no("Save changes?", yes_priority=True) == False:
             print("Character edit canceled")
             continue
             
@@ -200,7 +200,7 @@ def edit_character():
         load.save_characters(edited)
         print("== Character succesfully updated ==\n")
 
-        if ui.if_restart("Would you like to edit another character?", yes_priority=True) == False:
+        if ui.if_yes_no("Would you like to edit another character?", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return
 
@@ -242,7 +242,7 @@ def get_edit_info(characters, name):
                 else:
                     print("Invalid option. Please type 'edit' or 'delete'.")
 
-        if ui.if_restart("Continue editing?", yes_priority=True) == False:
+        if ui.if_yes_no("Continue editing?", yes_priority=True) == False:
             return name, characters[name]
 
 
@@ -264,7 +264,7 @@ def handle_delete_field(character, field):
             except ValueError:
                 print("Invalid input.")
     else:
-        if ui.if_restart(f"Delete entire field: {field}?"):
+        if ui.if_yes_no(f"Delete entire field: {field}?"):
             del character[field]
             print(f"{field} deleted")
         else:
