@@ -42,7 +42,7 @@ def main():
             case "backup":
                 delete_character.restore_backup()
             case "restore":
-                print("Not yet available")
+                delete_character.restore_deleted_characters()
             case "exit":
                 print("Exiting LoreLedger...\nGoodbye!")
                 return

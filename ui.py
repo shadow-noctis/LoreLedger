@@ -12,7 +12,7 @@ def confirm_exit():
         else:
             print("Please enter 'yes' or 'no'.")
 
-def if_restart(message, yes_priority=False, no_priority=False):
+def if_yes_no(message, yes_priority=False, no_priority=False):
     yes_set = {"yes", "y"}
     no_set = {"no", "n"}
     if yes_priority:

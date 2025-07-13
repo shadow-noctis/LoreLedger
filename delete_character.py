@@ -32,7 +32,7 @@ def delete():
             case "back":
                 return
             case "exit":
-                return
+                ui.confirm_exit()
             case _:
                 print("Unknown command. Please refer to the list above or return to main menu by typing 'back'")
                 continue
@@ -55,7 +55,7 @@ def delete_all():
             print("Returning to Main Menu...")
             return
     #Create backup if needed:
-    if ui.if_restart("Would you like to backup your characters?"):
+    if ui.if_yes_no("Would you like to backup your characters?"):
         shutil.copy("characters.json", "characters_backup.json")
         print("Backup created")
 
@@ -71,6 +71,7 @@ def backup():
     print("  - Restore deleted characters currently not in your LoreLedger")
     print("  - Restore characters after")
 
+#Restore previous state before using delete_all
 def restore_backup():
     print(" === RESTORE PREVIOUS STATE ===")
     if os.path.exists("characters_backup.json") == False:
@@ -80,7 +81,7 @@ def restore_backup():
     print("\n== IMPORTANT! ==")
     print("Restoring previus state will OVERWRITE current characters in your LoreLedger")
     print("Use backup to restore previously deleted characters not in your LoreLedger anymore")
-    if ui.if_restart("Are you sure you want to return to previous state before delete all?"):     
+    if ui.if_yes_no("Are you sure you want to return to previous state before delete all?"):     
         characters = load.load_characters(file="characters_backup.json")
         load.save_characters(characters)
         os.remove("characters_backup.json")
@@ -90,8 +91,30 @@ def restore_backup():
     print("Returning to Main menu...")
 
 
+#Restore deleted characters saved in deleted_characters.json
 def restore_deleted_characters():
-    pass
+    if ui.if_yes_no("Restore deleted characters?"):
+        #Check first if backup file exists:
+        if os.path.isfile("deleted_characters.json"):
+            backup_characters = load.load_characters(file="deleted_characters")
+        else:
+            print("Error: Backup file does not exist")
+            print("Returning to Main Menu...") 
+            return
+
+        #Loop through characters and add any deleted characters into current characters.json dictionary
+        characters = load.load_characters()
+        for name in backup_characters:
+            if name not in characters:
+                characters[name] = backup_characters[name]
+        load.save_characters(characters)
+        print("Characters succesfully restored")
+        if ui.if_yes_no("Delete backup file?"):
+            os.remove("deleted_characters.json")
+            print("Backup file cleared")
+    else:
+        print("Restore cancelled")
+    print("Returning to Main Menu...")
 
 #Delete single character
 def delete_character():
@@ -117,7 +140,7 @@ def delete_character():
                 continue
             elif len(matches) == 1:
                 print(f"One close match found:\n   - {matches[0]}")
-                if ui.if_restart(f"Would you like to delete character {matches[0]}?", no_priority=True) == False:
+                if ui.if_yes_no(f"Would you like to delete character {matches[0]}?", no_priority=True) == False:
                     to_delete = matches[0]
                 else:
                     print("To list all characters type 'list'")
@@ -133,14 +156,17 @@ def delete_character():
 
         print("\n                === WARNING ===")
         print(f"You are about to delete character: {to_delete}")
-        if ui.if_restart(f"Are you sure you want to proceed?") == False:
+        if ui.if_yes_no(f"Are you sure you want to proceed?") == False:
             print("Delete canceled")
             continue
 
         print(f"Deleting character {to_delete}...")
-        characters.pop(to_delete)
+        backup_character = characters.pop(to_delete)
         load.save_characters(characters)
+        backup_file = load.load_characters(file="deleted_characters.json")
+        backup_file[to_delete] = backup_character
+        load.save_characters(backup_file, file="deleted_characters.json")
         print("== Character succesfully deleted from your LoreLedger. ==")
-        if ui.if_restart("Delete another character?", no_priority=True) == False:
+        if ui.if_yes_no("Delete another character?", no_priority=True) == False:
             print("Returning to Main Menu...")
             return
