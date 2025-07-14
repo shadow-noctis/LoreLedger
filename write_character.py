@@ -22,7 +22,8 @@ def new_character():
         #Check if character already exists and return if True:
         if name in characters:
             print("Character already exists.\n")
-            continue
+            if ui.if_yes_no("Overwrite old character?", no_priority=True) == False:
+                continue
 
         #Check if part of name already exists:
         matches = matching.partial_matches(characters, given_name, surname)
@@ -34,16 +35,6 @@ def new_character():
             if ui.if_yes_no(f"Continue creating new character with name {name}?", yes_priority=True) == False:
                 print("Character creation canceled...")
                 continue
-
-        #To be added:
-        """
-            Better options for user (if name is empty etc.)
-                Options:
-                    1. Edit Character (later implementation)
-                    2. Overwrite old
-                    3. Read existing character sheet
-                    4. Exit
-        """
 
         #Collect necessary information:
         age = input("Age: ")
