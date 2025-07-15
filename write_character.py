@@ -132,6 +132,8 @@ def edit_character():
         elif to_edit.lower().strip() == "back":
             print("Returning to Main Menu...")
             return
+        elif to_edit.lower().strip() == "exit":
+            ui.confirm_exit()
         #No exact match found
         if to_edit not in characters:
             print("Character not found in LoreLedger")
@@ -171,20 +173,23 @@ def edit_character():
             continue
 
         print("\n   === EDIT DETAILS ===\n")
-        print("Previous character information:\n")
-        print(f" === {to_edit} === ")
+        if name != to_edit:
+            print(f" == {to_edit} → {name} == ")
+        else:
+            print(f" === {name} === ")
         for key in old_character:
-            print(f"{key}: {old_character[key]}")
-
-        print()
-        print(" == New Information: == \n")
-        print(f" === {name} === ")
-        for key in updated:
-            print(f"{key}: {updated[key]}")
+            if key in updated:
+                if old_character[key] != updated[key]:
+                    print(f" {key}: {old_character[key]} → {updated[key]}")
+            if key not in updated:
+                print(f"{key}:{old_character[key]} → deleted")
+        added_fields = set(updated) - set(old_character)
+        for added in added_fields:
+            print(f" Added field → {added}: {updated[added]}")
 
         #Confirm changes:
-        if ui.if_yes_no("Save changes?", yes_priority=True) == False:
-            print("Character edit canceled")
+        if ui.if_yes_no("\nSave changes?", yes_priority=True) == False:
+            print("Character edit canceled\n")
             continue
             
         #Save to JSON file:
@@ -205,9 +210,13 @@ def get_edit_info(characters, name):
         elif field == "Add":
             add_custom_fields(characters[name])
 
+        elif field == "Name": 
+            new_name = input("New Name: ")
+            characters[new_name] = characters.pop(name)
+            name = new_name
+
         #Edit character:
         else:
-
             while True:
                 action = input(f"Would you like to edit or delete {field}? (edit/delete): ").lower().strip()
 
@@ -216,19 +225,12 @@ def get_edit_info(characters, name):
                     handle_delete_field(characters[name], field)
                     break
                 elif action == "edit":
-
-                    #Edit field
-                    if field != "Name":
-                        if type(characters[name][field]) is list:
-                            new_info = input(f"Add to {field}: ").strip()
-                            characters[name][field].append(new_info)
-                        else:
-                            new_info = input(f"Change {field} to: ")
-                            characters[name][field] = new_info
-                    else: 
-                        new_name = input("New Name: ")
-                        characters[new_name] = characters.pop(name)
-                        name = new_name
+                    if type(characters[name][field]) is list:
+                        new_info = input(f"Add to {field}: ").strip()
+                        characters[name][field].append(new_info)
+                    else:
+                        new_info = input(f"Change {field} to: ")
+                        characters[name][field] = new_info
                     break
                 else:
                     print("Invalid option. Please type 'edit' or 'delete'.")

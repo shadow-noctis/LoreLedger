@@ -19,7 +19,7 @@ def list_characters(characters):
     return character_list
 
 
-
+#Check for partial matches. If surname provided, return only characters with the same surname
 def partial_matches(characters, given_name, surname=None):
     if surname != None:
         matching = characters_by_surname(characters, surname)
