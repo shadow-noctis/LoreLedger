@@ -97,7 +97,7 @@ def restore_deleted_characters():
     if ui.if_yes_no("Restore deleted characters?"):
         #Check first if backup file exists:
         if os.path.isfile("deleted_characters.json"):
-            backup_characters = load.load_characters(file="deleted_characters")
+            backup_characters = load.load_characters(file="deleted_characters.json")
         else:
             print("Error: Backup file does not exist")
             print("Returning to Main Menu...") 
@@ -118,18 +118,24 @@ def restore_deleted_characters():
     print("Returning to Main Menu...")
 
 #Delete single character
-def delete_character():
+def delete_character(to_delete):
     print("                         === WARNING === ")
     print("You are about to delete a character currently stored in your LoreLedger")
     print("            ~ Happy deleating will lead to void ~\n")
     while True:
-        to_delete = input("Which character would you like to delete: ")
         characters = load.load_characters()
-        if to_delete == "back" or to_delete == "exit":
+        if to_delete == "back":
             return
+        if to_delete == "exit":
+            ui.confirm_exit()
+            to_delete = input("Which character would you like to delete: ")
+            continue
         elif to_delete == "list":
             read_character.list_all()
+            to_delete = input("Which character would you like to delete: ")
             continue
+
+        #Check if name exists. If not, search for close matches
         if to_delete not in characters:
             print("Exact match not found...")
             print("Searching for close matches...")
@@ -137,14 +143,15 @@ def delete_character():
             if len(matches) == 0:
                 print("Error: Character not found.")
                 print("To instead move to listing all characters type: 'list'")
+                to_delete = input("Which character would you like to delete: ")
                 continue
             elif len(matches) == 1:
                 print(f"One close match found:\n   - {matches[0]}")
                 if ui.if_yes_no(f"Would you like to delete character {matches[0]}?", no_priority=True) == False:
                     to_delete = matches[0]
                 else:
-                    print("To list all characters type 'list'")
-                    continue
+                    print("Delete cancelled")
+                    return
             else:
                 print("Close matches found.")
                 print("Did you mean: ")
@@ -152,13 +159,15 @@ def delete_character():
                 for match in matches:
                     print(f"- {match}")
                 print()
+                to_delete = input("Which character would you like to delete: ")
                 continue
 
         print("\n                === WARNING ===")
         print(f"You are about to delete character: {to_delete}")
         if ui.if_yes_no(f"Are you sure you want to proceed?") == False:
-            print("Delete canceled")
-            continue
+            print("Delete cancelled")
+            print("Returning to Main Menu...")
+            return
 
         print(f"Deleting character {to_delete}...")
         backup_character = characters.pop(to_delete)
@@ -170,6 +179,7 @@ def delete_character():
         if ui.if_yes_no("Delete another character?", no_priority=True) == False:
             print("Returning to Main Menu...")
             return
+        to_delete = input("Which character would you like to delete: ")
         
 #Delete all characters with the title specified by user
 def delete_by_rule():
@@ -179,6 +189,13 @@ def delete_by_rule():
         print("Currently only title related deletion possible")
         print("Characters belonging to multiple titles won't be deleted")
         title = input("Delete all characters appearing in: ")
+        if title == "back":
+            print("Delete cancelled")
+            print("Returning to Main Menu...")
+            return
+        elif title == "exit":
+            ui.confirm_exit()
+            continue
         characters = load.load_characters()
         for name in characters:
             if title in characters[name]["Titles"] and len(characters[name]["Titles"]) == 1:
@@ -187,7 +204,7 @@ def delete_by_rule():
         #Nothing found: Ask for the title name again.
         if len(deleted_characters) == 0:
             print(f"Characters belonging only to {title} not found")
-            print("Please check for typos or try another title name")
+            print("Please check for typos or try another title name\n")
             continue
 
         #List all characters before deleting permanently

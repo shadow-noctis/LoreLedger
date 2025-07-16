@@ -15,6 +15,7 @@ def new_character():
             return
         elif surname.lower() == "exit":
             ui.confirm_exit()
+            continue
 
         given_name = input("Given names: ")
         name = f"{given_name} {surname}"
@@ -134,6 +135,7 @@ def edit_character():
             return
         elif to_edit.lower().strip() == "exit":
             ui.confirm_exit()
+            continue
         #No exact match found
         if to_edit not in characters:
             print("Character not found in LoreLedger")
@@ -172,6 +174,7 @@ def edit_character():
             print("Edit cancelled...")
             continue
 
+        #Print edit details for the user to confirm if they wish to save the changes made
         print("\n   === EDIT DETAILS ===\n")
         if name != to_edit:
             print(f" == {to_edit} → {name} == ")
@@ -226,8 +229,11 @@ def get_edit_info(characters, name):
                     break
                 elif action == "edit":
                     if type(characters[name][field]) is list:
-                        new_info = input(f"Add to {field}: ").strip()
-                        characters[name][field].append(new_info)
+                        while True:
+                            new_info = input(f"Add to {field}: ").strip()
+                            if new_info == "":
+                                break
+                            characters[name][field].append(new_info)
                     else:
                         new_info = input(f"Change {field} to: ")
                         characters[name][field] = new_info
@@ -292,6 +298,7 @@ def get_field(character, show_add_option=False):
             return "BACK"
         elif field.lower() == "exit":
             ui.confirm_exit()
+            continue
 
         #Clean field name and capitalize it for comparison of all keys
         field_clean = field.strip().capitalize()

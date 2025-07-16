@@ -10,7 +10,16 @@ def main():
         print()
         print("=== LoreLedger Main Menu ===\n")
 
-        command = input("What would you like to do: ").lower().strip()
+        #Ask for command. Split the reponse in case name/argument passed on:
+        response = input("What would you like to do: ").strip()
+        parts = response.split(maxsplit=1)
+        command = parts[0].lower()
+        if len(parts) > 1:
+            argument = parts[1]
+        else:
+            argument = None
+
+        #match command to use right function
         match command:
             case "options":
                 print("\n=== LoreLedger Menu ===\n")
@@ -30,7 +39,11 @@ def main():
             case "list":
                 read_character.list_all()
             case "read":
-                read_character.read()
+                if argument == None:
+                    name = input("Which character would you like to view: ")
+                    read_character.read(name)
+                else:
+                    read_character.read(argument)
             case "search":
                 print("Search not yet available.")
             case "add":
@@ -38,7 +51,14 @@ def main():
             case "edit":
                 write_character.edit_character()
             case "delete":
-                delete_character.delete()
+                if argument == None:
+                    delete_character.delete()
+                elif argument == "all":
+                    delete_character.delete_all()
+                elif argument == "rule":
+                    delete_character.delete_by_rule()
+                else:
+                    delete_character.delete_character(argument)
             case "backup":
                 delete_character.restore_backup()
             case "restore":

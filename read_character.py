@@ -9,14 +9,14 @@ def list_all():
         print(key)
     return
 
-def read():
+def read(name):
     #Load characters:
     characters = load.load_characters()
 
     while True:
-        name = input("Which character would you like to view? ")
         if name == 'list':
             list_all()
+            name = input("Which character would you like to view: ")
             continue
         elif name == "back":
             return
@@ -30,6 +30,7 @@ def read():
             if len(matches) == 0:
                 print("Error: Character not found.")
                 print("List all characters by typing 'list'")
+                name = input("Which character would you like to view: ")
                 continue
             elif len(matches) == 1:
                 name = matches[0]
@@ -39,6 +40,7 @@ def read():
                 for match in matches:
                     print(f"- {match}")
                 print()
+                name = input("Which character would you like to view: ")
                 continue
 
         #Print all values
@@ -51,3 +53,4 @@ def read():
             else:
                 print(f"{key}: {characters[name][key]}")
         print()
+        return
