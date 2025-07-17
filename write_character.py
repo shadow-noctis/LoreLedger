@@ -121,21 +121,22 @@ def add_custom_fields(character):
             return character
 
         
-def edit_character():
+def edit_character(to_edit):
     while True:
         
         characters = load.load_characters()
-        to_edit = input("Which character would you like to edit? ")
         #"list" gives option to list all characters before restarting the loop
         if to_edit == "list":
             read_character.list_all()
+            to_edit = input("Which character would you like to edit? ")
             continue
         elif to_edit.lower().strip() == "back":
             print("Returning to Main Menu...")
             return
         elif to_edit.lower().strip() == "exit":
             ui.confirm_exit()
-            continue
+            print("Returning to Main Menu...")
+            return
         #No exact match found
         if to_edit not in characters:
             print("Character not found in LoreLedger")
@@ -153,6 +154,7 @@ def edit_character():
                 print(f"  - {matches[0]}\n")
                 if ui.if_yes_no(f"Would you like to edit {matches[0]}?", yes_priority=True) == False:
                     print("Please try another name or type 'list' to list all characters")
+                    to_edit = input("Which character would you like to edit? ")
                     continue
                 else:
                     to_edit = matches[0]
@@ -163,6 +165,7 @@ def edit_character():
                 print("Did you mean: \n")
                 for name in matches:
                     print(f"  - {name}")
+                to_edit = input("Which character would you like to edit? ")
                 continue
 
         # Save unedited character and edit copy or the dictionary
@@ -172,7 +175,8 @@ def edit_character():
 
         if updated == False:
             print("Edit cancelled...")
-            continue
+            print("Returning to Main Menul...")
+            return
 
         #Print edit details for the user to confirm if they wish to save the changes made
         print("\n   === EDIT DETAILS ===\n")
@@ -202,6 +206,7 @@ def edit_character():
         if ui.if_yes_no("Would you like to edit another character?", yes_priority=True) == False:
             print("Returning to Main Menu...")
             return
+        to_edit = input("Which character would you like to edit? ")
 
 #Helper function to search for
 def get_edit_info(characters, name):

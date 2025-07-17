@@ -49,7 +49,11 @@ def main():
             case "add":
                 write_character.new_character()
             case "edit":
-                write_character.edit_character()
+                if argument == None:
+                    name = input("Which character would you like to edit? ")
+                    write_character.edit_character(name)
+                else:
+                    write_character.edit_character(argument)
             case "delete":
                 if argument == None:
                     delete_character.delete()
