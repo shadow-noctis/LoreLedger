@@ -2,12 +2,17 @@ import load
 import matching
 import ui
 
-def list_all():
+def list_all(title=None):
     characters = load.load_characters()
     print()
-    for key in characters:
-        print(key)
-    return
+    if title != None:
+        print(f" == Characters: {title} ==")
+        for character in characters:
+            if title in characters[character]["Titles"]:
+                print(f"  - {character}")
+    else:
+        for character in characters:
+            print(f"  - {character}")
 
 def read(name):
     #Load characters:

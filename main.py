@@ -1,6 +1,7 @@
 import read_character
 import write_character
 import delete_character
+import search
 
 def main():
     print(" === Welcome to LoreLedger! ===\n")
@@ -18,7 +19,6 @@ def main():
             argument = parts[1]
         else:
             argument = None
-
         #match command to use right function
         match command:
             case "options":
@@ -37,7 +37,10 @@ def main():
                 print("   exit    - Exit the program")
                 print()
             case "list":
-                read_character.list_all()
+                if argument == None:
+                    read_character.list_all()
+                else:
+                    read_character.list_all(title=argument)
             case "read":
                 if argument == None:
                     name = input("Which character would you like to view: ")
@@ -45,7 +48,10 @@ def main():
                 else:
                     read_character.read(argument)
             case "search":
-                print("Search not yet available.")
+                if argument == None:
+                    search.search()
+                else:
+                    search.search(search_term=argument)
             case "add":
                 write_character.new_character()
             case "edit":

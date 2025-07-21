@@ -274,12 +274,6 @@ def handle_delete_field(character, field):
         else:
             print("Deletion cancelled")
 
-
-
-def delete_from_list(characters, name):
-    print("not yet availabe")
-    return
-
 #Number each key for the specific character and number them. Allows to choose which to edit
 def get_field(character, show_add_option=False):
     while True:
