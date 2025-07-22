@@ -11,7 +11,7 @@ def delete():
     print("  all         -  delete *ALL* characters.")
     print("  character   -  delete specific character from LoreLedger")
     print("  rule        -  delete all characters with specific condition (e.g. delete all characters of specific story)")
-    print("  clear       -  delete your backup (Note! Backup not yet available.)")
+    print("  clear       -  delete your backup")
     print("  back        -  return to main menu\n")
     print("                        === Important ===")
     print("LoreLedger does not currently have option to recover deleted files.")
@@ -147,7 +147,7 @@ def delete_character(to_delete):
                 continue
             elif len(matches) == 1:
                 print(f"One close match found:\n   - {matches[0]}")
-                if ui.if_yes_no(f"Would you like to delete character {matches[0]}?", no_priority=True) == False:
+                if ui.if_yes_no(f"Would you like to delete character {matches[0]}?", no_priority=True):
                     to_delete = matches[0]
                 else:
                     print("Delete cancelled")
