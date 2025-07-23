@@ -32,3 +32,11 @@ def print_numbered_list(to_number):
     for item in to_number:
         print(f"{i}. {item}")
         i += 1
+
+def token_match(query, full_name):
+    query_tokens = query.lower().split()
+    name = full_name.lower()
+    for q in query_tokens:
+        if q not in name:
+            return False
+    return True

@@ -29,24 +29,35 @@ def read(name):
             ui.confirm_exit()
         print()
 
-        #Error handling:
+        #Character not found, searches for close matches:
         if name not in characters:
-            matches = matching.partial_matches(characters, name)
-            if len(matches) == 0:
-                print("Error: Character not found.")
-                print("List all characters by typing 'list'")
-                name = input("Which character would you like to view: ")
-                continue
-            elif len(matches) == 1:
-                name = matches[0]
-            else:
-                print("Exact match not found.\nDid you mean: ")
-                print()
-                for match in matches:
-                    print(f"- {match}")
-                print()
-                name = input("Which character would you like to view: ")
-                continue
+            token_matched = False
+            if len(name.split()) > 1:
+                for character in characters:
+                    if matching.token_match(name, character):
+                        name = character
+                        token_matched = True
+                        break
+            if token_matched == False:
+
+
+
+                matches = matching.partial_matches(characters, name)
+                if len(matches) == 0:
+                    print("Error: Character not found.")
+                    print("List all characters by typing 'list'")
+                    name = input("Which character would you like to view: ")
+                    continue
+                elif len(matches) == 1:
+                    name = matches[0]
+                else:
+                    print("Exact match not found.\nDid you mean: ")
+                    print()
+                    for match in matches:
+                        print(f"- {match}")
+                    print()
+                    name = input("Which character would you like to view: ")
+                    continue
 
         #Print all values
         print(f"=== {name} ===")

@@ -139,8 +139,11 @@ def edit_character(to_edit):
             return
         #No exact match found
         if to_edit not in characters:
-            print("Character not found in LoreLedger")
-            print("Searching for similar names...")
+            if len(to_edit.split()) > 1:
+                token_match = token_search(characters, to_edit)
+                if token_match != False:
+                    to_edit = token_match
+
             matches = matching.partial_matches(characters, to_edit)
             #No matches found
             if matches == []:
@@ -159,8 +162,8 @@ def edit_character(to_edit):
                 else:
                     to_edit = matches[0]
 
-            #Multiple matches found. List them and ask for a new name
-            #Further development: numbered list user can choose from
+                #Multiple matches found. List them and ask for a new name
+                #Further development: numbered list user can choose from
             else:
                 print("Did you mean: \n")
                 for name in matches:
@@ -207,6 +210,16 @@ def edit_character(to_edit):
             print("Returning to Main Menu...")
             return
         to_edit = input("Which character would you like to edit? ")
+
+
+def token_search(characters, name):
+    for character in characters:
+        if matching.token_match(name, character):
+            if ui.if_yes_no(f"Did you mean: {character} ", yes_priority=True):
+                return character
+            else:
+                return False
+
 
 #Helper function to search for
 def get_edit_info(characters, name):
