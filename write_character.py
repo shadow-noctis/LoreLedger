@@ -38,6 +38,7 @@ def new_character():
                 continue
 
         #Collect necessary information:
+        general_info = input("General information: ")
         age = input("Age: ")
         gender = input("Gender: ")
         print("You can add story titles and family members separated by comma or type '/detailed' to add one item at time.")
@@ -54,6 +55,7 @@ def new_character():
         
         # Add character info into dictionary
         characters[name] = {
+            "Description": general_info,
             "Age": age,
             "Gender": gender,
             "Family": family,
@@ -123,7 +125,6 @@ def add_custom_fields(character):
         
 def edit_character(to_edit):
     while True:
-        
         characters = load.load_characters()
         #"list" gives option to list all characters before restarting the loop
         if to_edit == "list":
@@ -143,6 +144,7 @@ def edit_character(to_edit):
                 token_match = token_search(characters, to_edit)
                 if token_match != False:
                     to_edit = token_match
+                    break
 
             matches = matching.partial_matches(characters, to_edit)
             #No matches found
@@ -171,9 +173,10 @@ def edit_character(to_edit):
                 to_edit = input("Which character would you like to edit? ")
                 continue
 
-        # Save unedited character and edit copy or the dictionary
-        edited = copy.deepcopy(characters) 
-        old_character = copy.deepcopy(characters[to_edit])
+    # Save unedited character and edit copy or the dictionary
+    edited = copy.deepcopy(characters) 
+    old_character = copy.deepcopy(characters[to_edit])
+    while True:
         name, updated = get_edit_info(edited, to_edit)
 
         if updated == False:
@@ -199,17 +202,17 @@ def edit_character(to_edit):
 
         #Confirm changes:
         if ui.if_yes_no("\nSave changes?", yes_priority=True) == False:
-            print("Character edit canceled\n")
-            continue
-            
+            if ui.if_yes_no("Continue eiditing? ", no_priority=True) == False:
+                print("Character edit canceled\n")
+                return
+            else:
+                continue
+                
         #Save to JSON file:
         load.save_characters(edited)
         print("== Character succesfully updated ==\n")
-
-        if ui.if_yes_no("Would you like to edit another character?", yes_priority=True) == False:
-            print("Returning to Main Menu...")
-            return
-        to_edit = input("Which character would you like to edit? ")
+        print("Returning to Main Menu...")
+        return
 
 
 def token_search(characters, name):
@@ -219,6 +222,7 @@ def token_search(characters, name):
                 return character
             else:
                 return False
+    return False
 
 
 #Helper function to search for
@@ -226,7 +230,7 @@ def get_edit_info(characters, name):
     while True:
         field = get_field(characters[name], show_add_option=True)
         if field == "BACK":
-            return name, False
+            return name, characters[name]
         #Add custom fields to character:
         elif field == "Add":
             add_custom_fields(characters[name])
