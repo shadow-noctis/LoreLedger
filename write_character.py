@@ -139,7 +139,9 @@ def edit_character(to_edit):
             print("Returning to Main Menu...")
             return
         #No exact match found
-        if to_edit not in characters:
+        if to_edit in characters:
+            break
+        else:
             if len(to_edit.split()) > 1:
                 token_match = token_search(characters, to_edit)
                 if token_match != False:
@@ -209,12 +211,15 @@ def edit_character(to_edit):
                 continue
                 
         #Save to JSON file:
+        updated = reorder_sheet(updated)
+        edited[name] = updated
         load.save_characters(edited)
         print("== Character succesfully updated ==\n")
         print("Returning to Main Menu...")
         return
 
 
+#Search by token in query name to verify if all names found in a key inside JSON:
 def token_search(characters, name):
     for character in characters:
         if matching.token_match(name, character):
@@ -290,6 +295,17 @@ def handle_delete_field(character, field):
             print(f"{field} deleted")
         else:
             print("Deletion cancelled")
+
+
+def reorder_sheet(character):
+    reordered = {}
+    for field in character:
+        if field != "Titles":
+            reordered[field] = character[field]
+    if "Titles" in character:
+        reordered["Titles"] = character["Titles"]
+    return reordered
+
 
 #Number each key for the specific character and number them. Allows to choose which to edit
 def get_field(character, show_add_option=False):
