@@ -46,12 +46,12 @@ def new_character():
         if family.lower() == "/detailed":
             family = add_list_field("Family", message="Add family member: ")
         else:
-            family = to_list(family)
+            family = matching.to_list(family)
         story = input("Titles related to character: ").strip()
         if story.lower() == "/detailed":
             story = add_list_field("Titles", message="Add related title: ")
         else:
-            story = to_list(story)
+            story = matching.to_list(story)
         
         # Add character info into dictionary
         characters[name] = {
@@ -82,10 +82,6 @@ def new_character():
         if ui.if_yes_no("Add another character?", yes_priority=True) == False:
             print("Returning to Main Menu... ")
             return
-
-# Turn comma separated items to a list
-def to_list(items):
-    return items.strip().split(", ")
 
 # Add list item by item option or add custom field if list
 def add_list_field(field, message="Add: "):

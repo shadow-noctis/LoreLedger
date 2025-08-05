@@ -40,3 +40,7 @@ def token_match(query, full_name):
         if q not in name:
             return False
     return True
+
+# Turn comma separated items to a list
+def to_list(items):
+    return items.strip().split(", ")
