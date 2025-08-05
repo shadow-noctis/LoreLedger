@@ -2,6 +2,7 @@ import read_character
 import write_character
 import delete_character
 import search
+import dictionary
 
 def main():
     print(" === Welcome to LoreLedger! ===\n")
@@ -73,6 +74,19 @@ def main():
                 delete_character.restore_backup()
             case "restore":
                 delete_character.restore_deleted_characters()
+            case "dictionary":
+                if argument != None:
+                    arguments = argument.split()
+                    add = False
+                    tag = None
+                    for argument in arguments:
+                        if argument.lower() == "add":
+                            add = True
+                        elif argument.lower().startswith("tag="):
+                            tag = argument.split("=", 1)[1].strip()
+                    dictionary.dictionary(add=add, tag=tag)
+                else:
+                    dictionary.dictionary()
             case "exit":
                 print("Exiting LoreLedger...\nGoodbye!")
                 return
