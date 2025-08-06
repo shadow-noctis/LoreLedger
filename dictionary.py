@@ -2,7 +2,7 @@ import load
 
 #Simple dictionary. Reads all words previously saved. If tag included, will only read words with the specific tag, "eg. Story name".
 #If add passed as argument, reads all words and then asks for the new word and description to add.
-def dictionary(add=False, tag=None):
+def dictionary(add=False, tag=None, delete=False, edit=False):
     word_dict = load.load_characters(file="dictionary.json")
     #Flag to see if anything found:
     tag_found = False
@@ -25,17 +25,37 @@ def dictionary(add=False, tag=None):
 
     #Add new word if add==True
     if add:
-        new_word = input("Word: ")
-        description = input("Description: ")
-        tags = input("Tags (optional): ").lower().strip()
-        tags = tags.split()
-        if tags == []:
-            tags = None
-        word_dict[new_word] = {
-            "Description": description,
-            "Tags": tags
-            }
+        new_word = input("New word: ")
+        if new_word not in word_dict:
+            description = input("Description: ")
+            tags = input("Tags (optional): ").lower().strip()
+            tags = tags.split()
+            if tags == []:
+                tags = None
+            word_dict[new_word.capitalize()] = {
+                "Description": description,
+                "Tags": tags
+                }
 
-        #Save the new word to dictionary
-        load.save_characters(word_dict, file="dictionary.json")
-        print("Word added to dictionary")
+            print("Word added to dictionary")
+        else:
+            print("Word already in dictionary\nUse edit to change the description or delete")
+    
+    if delete:
+        word = input("Delete word: ").capitalize()
+        if word in word_dict:
+            del word_dict[word]
+            print(f"{word} deleted")
+        else:
+            print("Word not found\nDelete cancelled.")
+
+    if edit:
+        word = input("Edit word: ").capitalize()
+        if word in word_dict:
+            description = input("New description: ")
+            word_dict[word]["Description"] = description
+            print("Word updated")
+        else:
+            print("Word not found\nEdit cancelled.")
+
+    load.save_characters(word_dict, file="dictionary.json")

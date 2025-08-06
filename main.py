@@ -79,12 +79,19 @@ def main():
                     arguments = argument.split()
                     add = False
                     tag = None
+                    edit = False
+                    delete = False
                     for argument in arguments:
                         if argument.lower() == "add":
                             add = True
+                        elif argument.lower() == "delete":
+                            delete = True
+                        elif argument.lower() == "edit":
+                            print("Hello")
+                            edit = True
                         elif argument.lower().startswith("tag="):
                             tag = argument.split("=", 1)[1].strip()
-                    dictionary.dictionary(add=add, tag=tag)
+                    dictionary.dictionary(add, tag, delete, edit)
                 else:
                     dictionary.dictionary()
             case "exit":
