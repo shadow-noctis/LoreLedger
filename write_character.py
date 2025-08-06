@@ -4,84 +4,107 @@ import matching
 import read_character
 import ui
 
+importance_tags = ["Main", "Important", "Recurring", "Side"]
 def new_character():
-    while True:
-        #read characters.json
-        characters = load.load_characters()
-        
-        print("\n=== Adding new Character ===")
-        surname = input("Surname: ")
-        if surname.lower() == "back":
+    #read characters.json
+    characters = load.load_characters()
+    
+    print("\n=== Adding new Character ===")
+    surname = input("Surname: ")
+    if surname.lower() == "back":
+        return
+    elif surname.lower() == "exit":
+        ui.confirm_exit()
+        return
+
+    given_name = input("Given names: ")
+    name = f"{given_name} {surname}"
+    
+    #Check if character already exists and return if True:
+    if name in characters:
+        print("Character already exists.\n")
+        if ui.if_yes_no("Overwrite old character?", no_priority=True) == False:
+            print("Character creation cancelled.\nReturning to Main Menu...")
+
+    #Check if part of name already exists:
+    matches = matching.partial_matches(characters, given_name, surname)
+    if matches != []:
+        print("Similar names found:\n")
+        for match in matches:
+            print(f" - {match} {surname}")
+        print()
+        if ui.if_yes_no(f"Continue creating new character with name {name}?", yes_priority=True) == False:
+            print("Character creation canceled...")
             return
-        elif surname.lower() == "exit":
+
+    #Collect necessary information:
+    general_info = input("General information: ")
+    age = input("Age: ")
+    gender = input("Gender: ")
+    print("You can add titles separated by comma or type '/detailed' to add one item at time.")
+    story = input("Titles: ").strip()
+    if story.lower() == "/detailed":
+        story = add_list_field("Titles", message="Title: ")
+    else:
+        story = matching.to_list(story)
+    importance = numbered_list(importance_tags, message="Choose one: ")
+    
+    # Add character info into dictionary
+    characters[name] = {
+        "Description": general_info,
+        "Age": age,
+        "Gender": gender,
+        "Titles": story,
+        "Importance": importance
+    }
+
+    if ui.if_yes_no("Would you like to add custom fields?", no_priority=True):
+        add_custom_fields(characters[name])
+    
+    print(f"\n === {name} === ")
+    for key in characters[name]:
+        print(f"  - {key}: {characters[name][key]}")
+    print()
+
+    if ui.if_yes_no("Add character to LoreLedger?", yes_priority=True) == False:
+        print("Character creation cancelled...")
+        return
+
+    #Save to JSON file (characters.json):
+    ordered_characters = matching.reorder_characters(characters, importance_tags, "Importance")
+    load.save_characters(ordered_characters)
+    print("Character succesfully added to your LoreLedger!\n")
+        
+#Number all possible options before checking if the answer is valid. Resets loop if answer invalid
+def numbered_list(options, message="Your answer: "):
+    while True:
+        #Set numbering to begin from one
+        i = 1
+        for option in options:
+            print(f"{i}. {option}")
+            i += 1
+        print("\nEnter the number or name")
+        answer = input(message).strip()
+        if answer.lower() == "back":
+            return "BACK"
+        elif answer.lower() == "exit":
             ui.confirm_exit()
             continue
-
-        given_name = input("Given names: ")
-        name = f"{given_name} {surname}"
-        
-        #Check if character already exists and return if True:
-        if name in characters:
-            print("Character already exists.\n")
-            if ui.if_yes_no("Overwrite old character?", no_priority=True) == False:
-                continue
-
-        #Check if part of name already exists:
-        matches = matching.partial_matches(characters, given_name, surname)
-        if matches != []:
-            print("Similar names found:\n")
-            for match in matches:
-                print(f" - {match} {surname}")
-            print()
-            if ui.if_yes_no(f"Continue creating new character with name {name}?", yes_priority=True) == False:
-                print("Character creation canceled...")
-                continue
-
-        #Collect necessary information:
-        general_info = input("General information: ")
-        age = input("Age: ")
-        gender = input("Gender: ")
-        print("You can add story titles and family members separated by comma or type '/detailed' to add one item at time.")
-        family = input("Family members: ").strip()
-        if family.lower() == "/detailed":
-            family = add_list_field("Family", message="Add family member: ")
+        #Clean field name and capitalize it for comparison of all keys
+        answer_clean = answer.strip().capitalize()
+        if answer_clean in options:
+            return answer_clean
         else:
-            family = matching.to_list(family)
-        story = input("Titles related to character: ").strip()
-        if story.lower() == "/detailed":
-            story = add_list_field("Titles", message="Add related title: ")
-        else:
-            story = matching.to_list(story)
-        
-        # Add character info into dictionary
-        characters[name] = {
-            "Description": general_info,
-            "Age": age,
-            "Gender": gender,
-            "Family": family,
-            "Titles": story
-        }
+            try:
+                num_answer = int(answer)
+                if 1 <= num_answer <= len(options):
+                    return options[int(answer) -1]
+                else:
+                    print(f"Error: No option {answer}")    
+            except ValueError:
+                print("Error: field not found")
+                print("Type number OR name")
 
-        if ui.if_yes_no("Would you like to add custom fields?", no_priority=True):
-            add_custom_fields(characters[name])
-        
-        print(f"\n === {name} === ")
-        for key in characters[name]:
-            print(f"  - {key}: {characters[name][key]}")
-        print()
-
-        if ui.if_yes_no("Add character to LoreLedger?", yes_priority=True) == False:
-            print("Character creation cancelled...")
-            continue
-
-        #Save to JSON file (characters.json):
-        load.save_characters(characters)
-        print("Character succesfully added to your LoreLedger!\n")
-
-        #Ask if user wants to add another character
-        if ui.if_yes_no("Add another character?", yes_priority=True) == False:
-            print("Returning to Main Menu... ")
-            return
 
 # Add list item by item option or add custom field if list
 def add_list_field(field, message="Add: "):
@@ -103,20 +126,18 @@ def add_list_field(field, message="Add: "):
 def add_custom_fields(character):
     print("\nAdd first descriptive name (Skills, Appearance, Home town, etc.)")
     print("Add then relative information to that field\n")
-    while True:
-        #Ask for custom field name
-        field = input("Custom field name: ")
-        if ui.if_yes_no(f"Is {field} a list?", no_priority=True):
-            #If the custom field is list, collect the values with add_list_field:
-            field_value = add_list_field(field, f"{field}: ")
-        #Otherwise ask for the value for the field
-        else:
-            field_value = input(f"{field}: ")
-        #Append to custom_fields list as a tuple:
-        character[field] = field_value
-        #Ask if user wants to add another custom field and return all custom field tuples as list to use.
-        if ui.if_yes_no("Would you like to add another custom field?", yes_priority=True) == False:
-            return character
+    #Ask for custom field name
+    field = input("Custom field name: ")
+    if ui.if_yes_no(f"Is {field} a list?", no_priority=True):
+        #If the custom field is list, collect the values with add_list_field:
+        field_value = add_list_field(field, f"{field}: ")
+    #Otherwise ask for the value for the field
+    else:
+        field_value = input(f"{field}: ")
+    #Append to custom_fields list as a tuple:
+    character[field] = field_value
+    #Ask if user wants to add another custom field and return all custom field tuples as list to use.
+    return character
 
         
 def edit_character(to_edit):
@@ -206,9 +227,12 @@ def edit_character(to_edit):
             else:
                 continue
                 
-        #Save to JSON file:
+        #Reorder character's dictionary and character sheet before saving.
         updated = reorder_sheet(updated)
         edited[name] = updated
+        ordered_characters = matching.reorder_characters(characters, importance_tags, "Importance")
+
+        #Save to JSON file
         load.save_characters(edited)
         print("== Character succesfully updated ==\n")
         print("Returning to Main Menu...")
@@ -229,7 +253,11 @@ def token_search(characters, name):
 #Helper function to search for
 def get_edit_info(characters, name):
     while True:
-        field = get_field(characters[name], show_add_option=True)
+        fields = ["Name"]
+        for field in characters[name]:
+            fields.append(field)
+        fields.append("Add")
+        field = numbered_list(fields, message="Which field would you like to edit: ")
         if field == "BACK":
             return name, characters[name]
         #Add custom fields to character:
@@ -241,6 +269,9 @@ def get_edit_info(characters, name):
             characters[new_name] = characters.pop(name)
             name = new_name
 
+        elif field == "Importance":
+            new_importance = numbered_list(importance_tags, message="New importance tag: ")
+            characters[name][field] = new_importance
         #Edit character:
         else:
             while True:
@@ -300,51 +331,9 @@ def reorder_sheet(character):
             reordered[field] = character[field]
     if "Titles" in character:
         reordered["Titles"] = character["Titles"]
+    for field in character:
+        if field != "Importance":
+            reordered[field] = character[field]
+    if "Importance" in character:
+        reordered["Importance"] = character["Importance"]
     return reordered
-
-
-#Number each key for the specific character and number them. Allows to choose which to edit
-def get_field(character, show_add_option=False):
-    while True:
-        i = 1
-        fields = ["Name"]
-        print("1. Name")
-        #Print all options:
-        for key in character:
-            i += 1
-            print(f"{i}. {key}")
-            fields.append(key)
-        
-        if show_add_option:
-            i += 1
-            print(f"{i}. Add new field")
-            fields.append("Add")
-
-        print("\nEnter the number or name of field")
-        field = input("Which field would you like to edit: ").strip()
-        if field.lower() == "back":
-            return "BACK"
-        elif field.lower() == "exit":
-            ui.confirm_exit()
-            continue
-
-        #Clean field name and capitalize it for comparison of all keys
-        field_clean = field.strip().capitalize()
-
-        if field_clean == "Add new field":
-            field_clean == "Add"
-
-        if field_clean in fields:
-            return field_clean
-        
-        else:
-            try:
-                choice = int(field)
-                if 1 <= choice <= len(fields):
-                    return fields[int(field) -1]
-                else:
-                    print(f"Error: No option {field}")       
-            except ValueError:
-                print("Error: field not found")
-                print("Type only number or name of field (without number)")
-                print("To edit another character type in 'new'")
