@@ -2,17 +2,27 @@ import load
 import matching
 import ui
 
-def list_all(title=None):
+importance_tags = ["Main", "Important", "Recurring", "Side"]
+
+def list_all(title=None, side=False):
     characters = load.load_characters()
+    if side == False:
+        importance_tags.pop()
     print()
     if title != None:
-        print(f" == Characters: {title} ==")
-        for character in characters:
-            if title in characters[character]["Titles"]:
-                print(f"  - {character}")
+        print(f"  == Characters: {title} ==")
     else:
-        for character in characters:
-            print(f"  - {character}")
+        print(f"  == Characters ==")
+    if title != None:
+        for tag in importance_tags:
+            for character in characters:
+                if title in characters[character]["Titles"] and characters[character]["Importance"] == tag:
+                    print(f"  - {character}")
+    else:
+        for tag in importance_tags:
+            for character in characters:
+                if characters[character]["Importance"] == tag:
+                    print(f"  - {character}")
 
 def read(name):
     #Load characters:

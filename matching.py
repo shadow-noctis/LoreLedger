@@ -44,7 +44,6 @@ def token_match(query, full_name):
 # Turn comma separated items to a list
 def to_list(items):
     return items.strip().split(", ")
-
 def reorder_characters(unordered, options, field):
     reordered = {}
     for option in options:
@@ -53,7 +52,6 @@ def reorder_characters(unordered, options, field):
                 if option in unordered[key][field]:
                     reordered[key] = unordered[key]
             else:
-                print(option)
                 if unordered[key][field] == option:
                     reordered[key] = unordered[key]
     for key in unordered:

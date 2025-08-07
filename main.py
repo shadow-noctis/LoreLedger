@@ -34,6 +34,7 @@ def main():
                 print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
                 print("   backup  - Restores previous state before delete all (This will overwrite your current characters stored in LoreLedger)")
                 print("   restore - Restores deleted characters currently not in your LoreLedger")
+                print("   dict    - Access the dictionary, used with arguments add, edit and delete")
                 print("   back    - Return back to the main menu")
                 print("   exit    - Exit the program")
                 print()
@@ -41,7 +42,14 @@ def main():
                 if argument == None:
                     read_character.list_all()
                 else:
-                    read_character.list_all(title=argument)
+                    parts = argument.split(maxsplit=1)
+                    if parts[0] == "all":
+                        if len(parts) == 1:
+                            read_character.list_all(side=True)
+                        else:
+                            read_character.list_all(title=parts[1], side=parts[0])
+                    else:
+                        read_character.list_all(title=argument)
             case "read":
                 if argument == None:
                     name = input("Which character would you like to view: ")
@@ -74,7 +82,7 @@ def main():
                 delete_character.restore_backup()
             case "restore":
                 delete_character.restore_deleted_characters()
-            case "dictionary":
+            case "dict":
                 if argument != None:
                     arguments = argument.split()
                     add = False
@@ -87,7 +95,6 @@ def main():
                         elif argument.lower() == "delete":
                             delete = True
                         elif argument.lower() == "edit":
-                            print("Hello")
                             edit = True
                         elif argument.lower().startswith("tag="):
                             tag = argument.split("=", 1)[1].strip()
