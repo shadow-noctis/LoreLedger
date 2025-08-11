@@ -145,7 +145,7 @@ def edit_character(to_edit):
         characters = load.load_characters()
         #"list" gives option to list all characters before restarting the loop
         if to_edit == "list":
-            read_character.list_all()
+            read_character.list_all(side=True)
             to_edit = input("Which character would you like to edit? ")
             continue
         elif to_edit.lower().strip() == "back":
@@ -170,6 +170,7 @@ def edit_character(to_edit):
             if matches == []:
                 print("Error: Character not found.")
                 print("Please try another name or type 'list' to view all characters.")
+                to_edit = input("Which character would you like to edit? ")
                 continue
 
             #One match found: Asks user if they want to edit that character:

@@ -222,4 +222,13 @@ def delete_by_rule():
             print("Cancel deleted")
         print("Returning to Main Menu")
         return
-
+    
+def create_backup():
+    print("= Create Backup file =")
+    print("IMPORTANT: This will overwrite any previous backupfile you may have.")
+    if ui.if_yes_no("Create backup file?", yes_priority=True) == False:
+        print("Backup cancelled\nReturning to Main Menu...")
+        return
+    current_characters = load.load_characters()
+    load.save_characters(current_characters, file="characters_backup.json")
+    print("Backup succesfully created\nReturning to Main Menu...")

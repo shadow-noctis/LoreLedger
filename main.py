@@ -25,18 +25,19 @@ def main():
             case "options":
                 print("\n=== LoreLedger Menu ===\n")
                 print("Type one of the following commands:")
-                print("   options - Show commands menu")
-                print("   list    - List all characters")
-                print("   read    - View a specific character info")
-                print("   search  - Search by story/name (Not yet available)")
-                print("   add     - Add a new character")
-                print("   edit    - Edit a character")
-                print("   delete  - Delete all character files or specific. Delete can also be used to delete your backups.")
-                print("   backup  - Restores previous state before delete all (This will overwrite your current characters stored in LoreLedger)")
-                print("   restore - Restores deleted characters currently not in your LoreLedger")
-                print("   dict    - Access the dictionary, used with arguments add, edit and delete")
-                print("   back    - Return back to the main menu")
-                print("   exit    - Exit the program")
+                print("   options       - Show commands menu")
+                print("   list          - List all characters")
+                print("   read          - View a specific character info")
+                print("   search        - Search by story/name (Not yet available)")
+                print("   add           - Add a new character")
+                print("   edit          - Edit a character")
+                print("   delete        - Delete all character files or specific. Delete can also be used to delete your backups.")
+                print("   replace       - Restores previous state before delete all (This will overwrite your current characters stored in LoreLedger)")
+                print("   restore       - Restores deleted characters currently not in your LoreLedger")
+                print("   backup        - Create backup of your current characters")
+                print("   dictionary    - Access the dictionary, used with arguments add, edit and delete")
+                print("   back          - Return back to the main menu")
+                print("   exit          - Exit the program")
                 print()
             case "list":
                 if argument == None:
@@ -78,11 +79,13 @@ def main():
                     delete_character.delete_by_rule()
                 else:
                     delete_character.delete_character(argument)
-            case "backup":
+            case "replace":
                 delete_character.restore_backup()
             case "restore":
                 delete_character.restore_deleted_characters()
-            case "dict":
+            case "backup":
+                delete_character.create_backup()
+            case "dictionary":
                 if argument != None:
                     arguments = argument.split()
                     add = False
