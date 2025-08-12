@@ -2,11 +2,18 @@ import read_character
 import write_character
 import delete_character
 import search
-import dictionary
+import word_dictionary
+import load
 
 def main():
     print(" === Welcome to LoreLedger! ===\n")
     print("Type 'options' to see all available commands.\n")
+    all_tags = []
+    dictionary = load.load_characters(file='dictionary.json')
+    for word in dictionary:
+        for tag in dictionary[word]["Tags"]:
+            if tag not in all_tags:
+                all_tags.append(tag)
 
     while True:
         print()
@@ -101,9 +108,9 @@ def main():
                             edit = True
                         elif argument.lower().startswith("tag="):
                             tag = argument.split("=", 1)[1].strip()
-                    dictionary.dictionary(add, tag, delete, edit)
+                    word_dictionary.dictionary(all_tags, add, tag, delete, edit)
                 else:
-                    dictionary.dictionary()
+                    word_dictionary.dictionary(all_tags)
             case "exit":
                 print("Exiting LoreLedger...\nGoodbye!")
                 return
