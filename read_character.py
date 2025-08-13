@@ -7,14 +7,16 @@ importance_tags = ["Main", "Important", "Recurring", "Side"]
 def list_all(title=None, side=False):
     characters = load.load_characters()
     if side == False:
-        importance_tags.pop()
+        importance = importance_tags[0:-1:]
+    else:
+        importance = importance_tags
     print()
     if title != None:
         print(f"  == Characters: {title} ==")
     else:
         print(f"  == Characters ==")
     if title != None:
-        for tag in importance_tags:
+        for tag in importance:
             for character in characters:
                 if title in characters[character]["Titles"] and characters[character]["Importance"] == tag:
                     print(f"  - {character}")

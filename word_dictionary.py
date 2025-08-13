@@ -45,7 +45,9 @@ def dictionary(tags_list, add=False, tag=None, delete=False, edit=False):
                 }
 
             print("Word added to dictionary")
-            tags_list.extend(tags)
+            for tag in tags:
+                if tag not in tags_list:
+                    tags_list.append(tag)
         else:
             print("Word already in dictionary\nUse edit to change the description or delete")
     
