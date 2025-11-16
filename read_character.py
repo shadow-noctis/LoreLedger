@@ -17,11 +17,13 @@ def list_all(title=None, side=False):
         print(f"  == Characters ==")
     if title != None:
         for tag in importance:
+            print(f"\n    == {tag} ==\n")
             for character in characters:
                 if title in characters[character]["Titles"] and characters[character]["Importance"] == tag:
                     print(f"  - {character}")
     else:
         for tag in importance_tags:
+            print(f"\n    == {tag} ==\n")
             for character in characters:
                 if characters[character]["Importance"] == tag:
                     print(f"  - {character}")
