@@ -8,7 +8,7 @@ def search(search_term=None):
     if search_term == None:
         search_term = input("Search term: ")
     character_names = matching.list_characters(characters)
-    matches = get_close_matches(search_term, character_names, n=5)
+    matches = get_close_matches(search_term, character_names, n=5, cutoff=0.4)
     if len(matches) == 1:
         read_character.read(name=matches[0])
     elif len(matches) > 1:

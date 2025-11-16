@@ -4,13 +4,18 @@ import matching
 import read_character
 import ui
 
+# Possible importance tags for ordering the characters dictionary.
 importance_tags = ["Main", "Important", "Recurring", "Side"]
+
+#Create new character:
 def new_character():
     #read characters.json
     characters = load.load_characters()
     
     print("\n=== Adding new Character ===")
     surname = input("Surname: ")
+
+    #Check if user wants to cancel:
     if surname.lower() == "back":
         return
     elif surname.lower() == "exit":
@@ -20,7 +25,7 @@ def new_character():
     given_name = input("Given names: ")
     name = f"{given_name} {surname}"
     
-    #Check if character already exists and return if True:
+    #Check if character already exists. Asks if user wants to overwrite if true:
     if name in characters:
         print("Character already exists.\n")
         if ui.if_yes_no("Overwrite old character?", no_priority=True) == False:
@@ -300,7 +305,10 @@ def get_edit_info(characters, name):
             return name, characters[name]
 
 
+#Handle edit of delete
 def handle_delete_field(character, field):
+
+    #If list, user can either delete the field or item from the list.
     if isinstance(character[field], list):
         matching.print_numbered_list(character[field])
         choice = input("\nType the number of the item to remove or type 'all' to delete the entire field: ").strip()
@@ -325,6 +333,7 @@ def handle_delete_field(character, field):
             print("Deletion cancelled")
 
 
+#Reorder dictionary so "Titles" and "Importance" are always the last.
 def reorder_sheet(character):
     reordered = {}
     for field in character:
